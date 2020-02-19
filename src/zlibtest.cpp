@@ -1,45 +1,25 @@
-#include <iostream>
+#define _CRT_SECURE_NO_WARNINGS
 
-#include <string>
-
-#include"../bin/zlib-1.2.11/zlib.h"
-
-#include"../bin/zlib-1.2.11/zconf.h"
-
-using namespace std;
-
-int main(int argc, char* argv[])
-
+#include"ZipTool.h"
+#include<ctime>
+int main()
 {
-
-	//
-
-	unsigned char szSrc[] = "test the compression and uncompression of zlib.";
-
-	unsigned long nSrcLen = sizeof(szSrc);
-
-	unsigned char szZip[1024] = { 0 };
-
-	unsigned long nZipLen = 1024;
-
-	compress(szZip, &nZipLen, szSrc, nSrcLen);
-
-	//
-
-	unsigned char szUnZip[1024] = { 0 };
-
-	unsigned long nUnZipLen = 1024;
-
-	uncompress(szUnZip, &nUnZipLen, szZip, nZipLen);
-
-	//
-
-	cout << "Src:" << szSrc << ", len:" << nSrcLen << endl;
-
-	cout << "Zip:" << szZip << ", len:" << nZipLen << endl;
-
-	cout << "UnZip:" << szUnZip << ", len:" << nUnZipLen << endl;
-
+	unsigned char* src = new unsigned char[1024];
+	srand((unsigned)time(NULL));
+	for (int i = 0; i < 1024; i++)
+	{
+		src[i] = rand()%127;
+	}
+	unsigned long dstLen = 0;
+	unsigned long srcLen = 1024;
+	unsigned char* dst = ZipTool::zip(src, srcLen, &dstLen);
+	unsigned long unzipLen = 1024;
+	cout << dstLen<<endl;
+	unsigned char* unzipdest = ZipTool::unzip(dst, dstLen, &unzipLen);
+	cout << unzipLen<<endl;
+	for (int i = 0; i < 10; i++)
+	{
+		printf_s("%d %d\n", src[i], unzipdest[i]);
+	}
 	return 0;
-
 }

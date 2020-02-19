@@ -91,7 +91,7 @@
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
-      <AdditionalLibraryDirectories>C:\Users\alex\transmit-message-through-light\bin\zlib-1.2.11\contrib\vstudio\vc14\x64\ZlibDllDebug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\bin\zlib-1.2.11\contrib\vstudio\vc14\x64\ZlibDllDebug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>zlibwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -127,10 +127,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="ZipTool.cpp" />
     <ClCompile Include="zlibtest.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="..\bin\zlib-1.2.11\contrib\vstudio\vc14\x64\ZlibDllDebug\zlibwapi.lib" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="ZipTool.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
