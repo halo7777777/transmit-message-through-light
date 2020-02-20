@@ -24,6 +24,12 @@
     <ClCompile Include="ZipTool.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="parse.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="parse_test.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Library Include="..\bin\zlib-1.2.11\contrib\vstudio\vc14\x64\ZlibDllDebug\zlibwapi.lib">
@@ -32,6 +38,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ZipTool.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="parse.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
