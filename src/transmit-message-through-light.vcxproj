@@ -126,6 +126,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="FileConvert.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="parse.cpp" />
     <ClCompile Include="parse_test.cpp" />
@@ -136,6 +137,7 @@
     <Library Include="..\bin\zlib-1.2.11\contrib\vstudio\vc14\x64\ZlibDllDebug\zlibwapi.lib" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="FileConvert.h" />
     <ClInclude Include="parse.h" />
     <ClInclude Include="ZipTool.h" />
   </ItemGroup>
