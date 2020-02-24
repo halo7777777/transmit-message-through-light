@@ -1,4 +1,0 @@
-﻿  main.cpp
-C:\Users\18705996097\Desktop\项目\img_array_transfom\img_code.h(8,39): warning C4267: “参数”: 从“size_t”转换到“int”，可能丢失数据
-C:\Users\18705996097\Desktop\项目\img_array_transfom\img_code.h(11,42): warning C4267: “参数”: 从“size_t”转换到“int”，可能丢失数据
-  img_array_transfom.vcxproj -> C:\Users\18705996097\Desktop\项目\img_array_transfom\x64\Debug\img_array_transfom.exe
