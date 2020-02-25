@@ -1,10 +1,11 @@
 #pragma once
 
-#include"../bin/zlib-1.2.11/zlib.h"
+#include<zlib-1.2.11/zlib.h>
 
-#include"../bin/zlib-1.2.11/zconf.h"
+#include<zlib-1.2.11/zconf.h>
 
 #include <iostream>
+
 using namespace std;
 class ZipTool
 {
