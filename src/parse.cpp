@@ -8,6 +8,8 @@ void dectobin(unsigned char num, vector<unsigned char>& v)
 	v.push_back(num % 2);
 }
 
+
+
 unsigned char* parseArray(unsigned char* src, long srcLen)//将字符数组转换为01表示，扩大8倍
 {
 	unsigned char* dst = new unsigned char[srcLen *8];

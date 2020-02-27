@@ -37,7 +37,7 @@ void FileConvert::GenerateRandomArray(unsigned char* src, unsigned long size)
 	srand((unsigned)time(NULL));
 	for (int i = 0; i < size; i++)
 	{
-		src[i] = rand() % 128;
+		src[i] = rand();
 	}
 }//根据指定大小生成随机数组
 
