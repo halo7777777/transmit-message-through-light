@@ -23,12 +23,14 @@ int main()
 		char filename[] = "in.bin";
 		converter.GenerateRandFile(filename, size);//生成随机二进制文件
 		unsigned char* bytes = converter.FileToByte(filename, &size);//读取文件生成的Byte数组
+		
 		/*
 		一段由bytes生成图像的代码
-		命名格式为%d.png
+		命名格式为%05d.png
 		输出在imageSrc目录
-
 		*/
+		Code::Main(bytes, size, "imageSrc\\", "png");
+
 		int fps = 10;//测试用每秒10帧试试
 		converter.PicTransToVideo(fps);
 	}	/*
@@ -44,7 +46,7 @@ int main()
 		unsigned char* output;
 		int numOfPic=0;//获取imageOutput目录下文件个数
 		Mat img;
-		img = imread("imageOutput\\0.png");//第0张图片单独处理
+		img = imread("imageOutput\\00000.png");//第0张图片单独处理
 		int type = decoder.getType(img);
 		if (type == SINGLE)//如果只有单张图
 		{
@@ -61,7 +63,7 @@ int main()
 		{
 			string path = "imageOutput\\";
 			char filename[10];
-			sprintf_s(filename, "%d.png", i);
+			sprintf_s(filename, "%05d.png", i);
 			img = imread(path + filename);
 			type = decoder.getType(img);
 			int tmplen;
