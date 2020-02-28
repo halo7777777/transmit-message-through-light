@@ -22,7 +22,7 @@ namespace Code
         Vec3b(0,0,0),Vec3b(0,0,255),Vec3b(0,255,0),Vec3b(0,255,255),
         Vec3b(255,0,0),Vec3b(255,0,255),Vec3b(255,255,0),Vec3b(255,255,255)
     };
-    const int len_max[areanum] = {126,128,800};
+    const unsigned long len_max[areanum] = {126,128,800};
     const int areapos[areanum][2][2] =
     {//[2][2],第一维度代表高宽，第二维度代表左上角坐标
         {{63,16},{BPatternSize + 1,SafeAreaWidth}},
@@ -41,7 +41,7 @@ namespace Code
         StartAndEnd = 2,
         Normal = 3
     };
-    void Main(const char* info, int len, const char* savePath, const char* outputFormat) // 传入文件地址，长度，保存路径，保存格式
+    void Main(unsigned char* info, unsigned long len, const char* savePath, const char* outputFormat) // 传入文件地址，长度，保存路径，保存格式
     {
         Mat output;
         char fileName[128];
@@ -53,7 +53,7 @@ namespace Code
             memcpy(BUF, info, sizeof(unsigned char) * len);
             for (int i = len; i <= BytesPerFrame; ++i)
                 BUF[i] = rand() % 256;
-            output = amplify(CodeFrame(FrameType::StartAndEnd, (char*)BUF, len));
+            output = amplify(CodeFrame(FrameType::StartAndEnd, BUF, len));
             sprintf_s(fileName, "%s\\%05d.%s", savePath, count++, outputFormat);
             imwrite(fileName, output);
         }
@@ -74,7 +74,7 @@ namespace Code
                     memcpy(BUF, info, sizeof(unsigned char) * len);
                     for (int i = len; i <= BytesPerFrame; ++i)
                         BUF[i] = rand() % 256;
-                    output = amplify(CodeFrame(FrameType::End, (char*)BUF, len));
+                    output = amplify(CodeFrame(FrameType::End, BUF, len));
                 }
                 len -= BytesPerFrame;
                 sprintf_s(fileName, "%s\\%05d.%s", savePath, count++, outputFormat);
@@ -97,7 +97,7 @@ namespace Code
         }
         return output;
     }
-    Mat CodeFrame(FrameType frameType, const char* info, int tailLen)
+    Mat CodeFrame(FrameType frameType, unsigned char* info, unsigned long tailLen)
     {
         Mat codeMat = Mat(FrameSize, FrameSize, CV_8UC3, Vec3b(255, 255, 255));     //底片为黑色
         if (frameType != FrameType::End && frameType != FrameType::StartAndEnd)      
@@ -158,7 +158,7 @@ namespace Code
                     mat.at<Vec3b>(pointPos[i][0] + j, pointPos[i][1] + k) =
                     vec3bBig[(int)max(fabs(j - 8.5), fabs(k - 8.5))];       //打印回字
     }
-    void BulidInfoRect(Mat& mat, const char* info, int len, int areaID)
+    void BulidInfoRect(Mat& mat, unsigned char* info, unsigned long len, int areaID)
     {
         const unsigned char* pos = (const unsigned char*)info;
         const unsigned char* end = pos + len;
@@ -186,7 +186,7 @@ namespace Code
             if (pos == end) break;
         }
     }
-    void BulidFrameFlag(Mat& mat, FrameType frameType, int tailLen)
+    void BulidFrameFlag(Mat& mat, FrameType frameType, unsigned long tailLen)
     {
         switch (frameType)
         {

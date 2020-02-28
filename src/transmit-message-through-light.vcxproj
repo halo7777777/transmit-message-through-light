@@ -139,6 +139,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="code.cpp" />
+    <ClCompile Include="codetest.cpp" />
     <ClCompile Include="Decode.cpp" />
     <ClCompile Include="FileConvert.cpp" />
     <ClCompile Include="jz.cpp" />
