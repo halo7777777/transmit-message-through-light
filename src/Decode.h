@@ -14,12 +14,12 @@ private:
 	const int ROW;
 	const int COL;
 	int  getBit(Vec3b pix);
-
+	int getType(Mat& srcImg);
+	void rotate(Mat& srcImg, Mat& dst);
+	int getLength(Mat& srcImg);
 
 public:
 	Decode(int size=96) :ROW(size), COL(size){}
-	unsigned char* decode(Mat& srcImg, int type, int& length);
-	int getType(Mat& srcImg);
-	int getLength(Mat& srcImg);
-	void rotate(Mat& srcImg, Mat& dst);
+	unsigned char* decode(Mat& srcImg, int& length, int& type);
+
 };

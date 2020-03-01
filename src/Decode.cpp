@@ -5,6 +5,11 @@ void Decode::rotate(Mat& srcImg, Mat& dst)//传入源图像，目标矩阵,得�
 	QRCodeDetector qrDetector;
 	vector<Point2f> list;
 	qrDetector.detect(srcImg, list);
+	if (list.empty())
+	{
+		cout << "noting to find";
+		return;
+	}
 	Mat warpPerspective_mat(3, 3, CV_32FC1);//3，3旋转矩阵
 	Mat warpPerspective_dst = Mat::zeros(ROW, COL, newImg.type());//旋转后的目标
 
@@ -75,20 +80,26 @@ int Decode::getLength(Mat& srcImg)
 	return length;
 }
 
-unsigned char* Decode::decode(Mat& srcImg,int type,int& length)
+unsigned char* Decode::decode(Mat& srcImg,int& length,int& type)
 {
 	Mat dst;
 	rotate(srcImg, dst);
-	if (type == SINGLE || type == END)
+	type = getType(dst);
+	unsigned char* tmp=NULL;
+	length = getLength(dst);
+	int tmplen;
+	if (type == SINGLE || type == END||type==NORMAL)
 	{
-		length = getLength(dst);
+		tmplen = length;
+		tmp = new unsigned char[tmplen];
+
 	}
-	else
+	else if (type == BEGIN)
 	{
-		length = MAXSIZE;
+		tmplen = MAXSIZE;
+		 tmp = new unsigned char[tmplen];
 	}
-	unsigned char* tmp = new unsigned char[length];
-	for (int i = 0; i < length; i++) { tmp[i] = 0; }
+	for (int i = 0; i < tmplen; i++) { tmp[i] = 0; }
 	//block A
 	int index = 0;//暂存数组的下标
 	for (int i = 17; i < 80; i++)//遍历行
@@ -103,7 +114,7 @@ unsigned char* Decode::decode(Mat& srcImg,int type,int& length)
 				code += k * getBit(pix);
 				k *= 2;
 			}
-			if(index>=length) return tmp;
+			if(index>= tmplen) return tmp;
 			tmp[index++] = (unsigned char)code;
 		}
 	}
@@ -123,7 +134,7 @@ unsigned char* Decode::decode(Mat& srcImg,int type,int& length)
 				code += k * getBit(pix);
 				k *= 2;
 			}
-			if (index >= length) return tmp;
+			if (index >= tmplen) return tmp;
 			tmp[index++] = (unsigned char)code;
 		}
 	}
@@ -144,7 +155,7 @@ unsigned char* Decode::decode(Mat& srcImg,int type,int& length)
 				code += k * getBit(pix);
 				k *= 2;
 			}
-			if (index >= length) return tmp;
+			if (index >= tmplen) return tmp;
 			tmp[index++] = (unsigned char)code;
 		}
 	}
