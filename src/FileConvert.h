@@ -1,7 +1,6 @@
 #include<iostream>
 #include<ctime>
 #include<cstdio>
-#include<Windows.h>
 #include<string>
 using namespace std;
 class FileConvert
