@@ -30,7 +30,7 @@ unsigned char* FileConvert::FileToByte(char filename[], unsigned long* size)
 	fread(dst, sizeof(unsigned char), *size, p);
 	fclose(p);
 	return dst;
-}//¶ÁÈ¡ÎÄ¼şÉú³ÉÊı×é
+}//è¯»å–æ–‡ä»¶ç”Ÿæˆæ•°ç»„
 
 void FileConvert::GenerateRandomArray(unsigned char* src, unsigned long size)
 {
@@ -39,14 +39,14 @@ void FileConvert::GenerateRandomArray(unsigned char* src, unsigned long size)
 	{
 		src[i] = rand();
 	}
-}//¸ù¾İÖ¸¶¨´óĞ¡Éú³ÉËæ»úÊı×é
+}//æ ¹æ®æŒ‡å®šå¤§å°ç”Ÿæˆéšæœºæ•°ç»„
 
 void FileConvert::ByteToFile(unsigned char* src, char filename[], unsigned long size)
 {
 	p = fopen(filename, "wb");
 	fwrite(src, sizeof(unsigned char), size, p);
 	fclose(p);
-}//½«Êı¾İĞ´ÈëÎÄ¼şÖĞ
+}//å°†æ•°æ®å†™å…¥æ–‡ä»¶ä¸­
 
 void FileConvert::GenerateRandFile(char filename[], unsigned long size)
 {
@@ -54,9 +54,9 @@ void FileConvert::GenerateRandFile(char filename[], unsigned long size)
 	GenerateRandomArray(tmp, size);
 	ByteToFile(tmp, filename, size);
 	delete[]tmp;
-}//Éú³ÉËæ»úÎÄ¼ş
+}//ç”Ÿæˆéšæœºæ–‡ä»¶
 
-void FileConvert::PicTransToVideo(int picNumPersec)//Ã¿ÃëÖ¡Êı
+void FileConvert::PicTransToVideo(int picNumPersec)//æ¯ç§’å¸§æ•°
 {
 	string firstSetting, secondSetting, str3;
 	string outputname;
@@ -65,21 +65,21 @@ void FileConvert::PicTransToVideo(int picNumPersec)//Ã¿ÃëÖ¡Êı
 	cout << "please input the output video name:" << endl;
 	cin >> outputname;
 	firstSetting = "ffmpeg -f image2 -r ";
-	secondSetting = " -i imageSrc\\%d.png -vcodec mpeg4 videoOutput\\";
+	secondSetting = " -i imageSrc\\%05d.png -vcodec mpeg4 videoOutput\\";
 	str3 = firstSetting + picnum + secondSetting + outputname;
 	sprintf_s(command, "%s", str3.c_str());
 	system(command);
-}// ÃüÁî¸ñÊ½ ffmpeg - f image2 - r fps - i imageSrc\%d.jpg - vcodec mpeg4 output\\%s.mp4 ½«Í¼Æ¬±£´æÖÁoutputÄ¿Â¼ÏÂ
+}// å‘½ä»¤æ ¼å¼ ffmpeg - f image2 - r fps - i imageSrc\%d.jpg - vcodec mpeg4 output\\%s.mp4 å°†å›¾ç‰‡ä¿å­˜è‡³outputç›®å½•ä¸‹
 
 void FileConvert::VideoTransToPic()
 {
 	string firstSetting, formatName, videoName,str3;
 	char command[200];
 	firstSetting = "ffmpeg -i videoSrc\\";
-	formatName = " imageOutput\\%d.png";
+	formatName = " imageOutput\\%05d.png";
 	cout << "Please enter video name:" << endl;
 	cin >> videoName;
-	str3 = firstSetting + videoName + formatName; //×éºÏÉú³ÉffmpegÃüÁî
-	sprintf_s(command, "%s", str3.c_str()); //×ª»¯ÀàĞÍ
+	str3 = firstSetting + videoName + formatName; //ç»„åˆç”Ÿæˆffmpegå‘½ä»¤
+	sprintf_s(command, "%s", str3.c_str()); //è½¬åŒ–ç±»å‹
 	system(command);
 }

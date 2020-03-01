@@ -11,55 +11,64 @@ int main()
 	int function;
 	cout << "function one:encode file to video" << endl;
 	cout << "function two:decode video to file" << endl;
+	cout << "Calculate bit error rate" << endl;
 	cout << "input function you choose" << endl;
 	cin >> function;
 	FileConvert converter;
 	if (function == 1)
 	{
-		//Ñ¡ÔñÊäÈë×Ö·û´®orÉú³ÉËæ»ú±ÈÌØÁ÷//¸ù¾İ×Ö·û´®Éú³ÉÎÄ¼şµÄ½Ó¿Ú»¹Ã»ÓĞĞ´
+		//é€‰æ‹©è¾“å…¥å­—ç¬¦ä¸²orç”Ÿæˆéšæœºæ¯”ç‰¹æµ//æ ¹æ®å­—ç¬¦ä¸²ç”Ÿæˆæ–‡ä»¶çš„æ¥å£è¿˜æ²¡æœ‰å†™
 		unsigned long size;
 		cout << "Please input size :";
-		cin >> size;//ĞèÒªÉú³ÉÎÄ¼şµÄ´óĞ¡£¬µ¥Î»×Ö½Ú
+		cin >> size;//éœ€è¦ç”Ÿæˆæ–‡ä»¶çš„å¤§å°ï¼Œå•ä½å­—èŠ‚
 		char filename[] = "in.bin";
-		converter.GenerateRandFile(filename, size);//Éú³ÉËæ»ú¶ş½øÖÆÎÄ¼ş
-		unsigned char* bytes = converter.FileToByte(filename, &size);//¶ÁÈ¡ÎÄ¼şÉú³ÉµÄByteÊı×é
+		converter.GenerateRandFile(filename, size);//ç”ŸæˆéšæœºäºŒè¿›åˆ¶æ–‡ä»¶
+		unsigned char* bytes = converter.FileToByte(filename, &size);//è¯»å–æ–‡ä»¶ç”Ÿæˆçš„Byteæ•°ç»„
 		
 		/*
-		Ò»¶ÎÓÉbytesÉú³ÉÍ¼ÏñµÄ´úÂë
-		ÃüÃû¸ñÊ½Îª%05d.png
-		Êä³öÔÚimageSrcÄ¿Â¼
-		*/
+		ä¸€æ®µç”±bytesç”Ÿæˆå›¾åƒçš„ä»£ç 
+//		å‘½åæ ¼å¼ä¸º%05d.png
+//		è¾“å‡ºåœ¨imageSrcç›®å½•
+//		*/
 		Code::Main(bytes, size, "imageSrc\\", "png");
 
-		int fps = 10;//²âÊÔÓÃÃ¿Ãë10Ö¡ÊÔÊÔ
+		int fps = 10;//æµ‹è¯•ç”¨æ¯ç§’10å¸§è¯•è¯•
 		converter.PicTransToVideo(fps);
+		return 0;
 	}	/*
-
-	ÓÃÊÖ»úÂ¼ÖÆÊÓÆµ²¢ÅÄÉã
-	*/
+//
+//	ç”¨æ‰‹æœºå½•åˆ¶è§†é¢‘å¹¶æ‹æ‘„
+//	*/
 	else if (function == 2)
 	{
-		int indexptr = 0;//ÓÃÓÚ´æ´¢Ä¿µÄÊı×éµÄµ±Ç°ÏÂ±ê
+		int indexptr = 0;//ç”¨äºå­˜å‚¨ç›®çš„æ•°ç»„çš„å½“å‰ä¸‹æ ‡
 		Decode decoder;
 		int length;
 		converter.VideoTransToPic();
-		unsigned char* output;
-		int numOfPic=0;//»ñÈ¡imageOutputÄ¿Â¼ÏÂÎÄ¼ş¸öÊı
+		unsigned char* output=NULL;
+		int numOfPic=0;//è·å–imageOutputç›®å½•ä¸‹æ–‡ä»¶ä¸ªæ•°
 		Mat img;
-		img = imread("imageOutput\\00000.png");//µÚ0ÕÅÍ¼Æ¬µ¥¶À´¦Àí
+		img = imread("imageOutput\\00001.png");//ç¬¬0å¼ å›¾ç‰‡å•ç‹¬å¤„ç†
 		int type = decoder.getType(img);
-		if (type == SINGLE)//Èç¹ûÖ»ÓĞµ¥ÕÅÍ¼
+		if (type == SINGLE)//å¦‚æœåªæœ‰å•å¼ å›¾
 		{
 			output = decoder.decode(img, SINGLE, length);
 		}
-		else if (type == BEGIN)//¶àÕÅÍ¼Æ¬µÄµÚÒ»ÕÅÍ¼Æ¬
+		else //if (type == BEGIN)//å¤šå¼ å›¾ç‰‡çš„ç¬¬ä¸€å¼ å›¾ç‰‡
 		{
-			length = decoder.getLength(img);
-			output = new unsigned char[length];//ÓÃÓÚ´¢´æÊı¾İµÄÊı×é
-		}//²»¿ÉÄÜÊÇendºÍnormalÁË
+			Mat tmpimg;
+			decoder.rotate(img, tmpimg);
+			int tmplen;
+			length = decoder.getLength(tmpimg);
+			output = new unsigned char[length];//ç”¨äºå‚¨å­˜æ•°æ®çš„æ•°ç»„
+			unsigned char* tmp = decoder.decode(tmpimg, type, tmplen);//å°†å½“å‰äºŒç»´ç çš„æ•°æ®æš‚å­˜äºæ•°ç»„ä¸­
+			memcpy(output + indexptr, tmp, tmplen);//å¤åˆ¶åˆ°æœ€ç»ˆçš„æ•°ç»„é‡Œ
+			indexptr += tmplen;
+			delete[]tmp;
+		}//ä¸å¯èƒ½æ˜¯endå’Œnormaläº†
 
 
-		for (int i = 1; i < numOfPic; i++)
+		for (int i = 2; i <= numOfPic; i++)
 		{
 			string path = "imageOutput\\";
 			char filename[10];
@@ -67,14 +76,38 @@ int main()
 			img = imread(path + filename);
 			type = decoder.getType(img);
 			int tmplen;
-			unsigned char* tmp = decoder.decode(img, type, tmplen);//½«µ±Ç°¶şÎ¬ÂëµÄÊı¾İÔİ´æÓÚÊı×éÖĞ
-			memcpy(output + indexptr, tmp, tmplen);//¸´ÖÆµ½×îÖÕµÄÊı×éÀï
+			unsigned char* tmp = decoder.decode(img, type, tmplen);//å°†å½“å‰äºŒç»´ç çš„æ•°æ®æš‚å­˜äºæ•°ç»„ä¸­
+			memcpy(output + indexptr, tmp, tmplen);//å¤åˆ¶åˆ°æœ€ç»ˆçš„æ•°ç»„é‡Œ
 			indexptr += tmplen;
 			delete[]tmp;
-		}//±éÀúËùÓĞÍ¼Æ¬
+		}//éå†æ‰€æœ‰å›¾ç‰‡
 		char filename[] = "out.bin";
 		converter.ByteToFile(output, filename, length);
 
 	}
+	else if (function == 3)
+	{
+		FileConvert file;
+		FILE *fp1, *fp2;
+		unsigned long num1=0,num2=0;
+		fopen_s(&fp1,"in.bin", "rb");
+		fopen_s(&fp2,"out.bin", "rb");
+		num1 = file.GetFileSize(fp1);
+		num2 = file.GetFileSize(fp1);
+		unsigned char* dst1 = new unsigned char[num1];
+		unsigned char* dst2 = new unsigned char[num2];
+		fread(dst1, sizeof(unsigned char), num1, fp1);
+		fread(dst2, sizeof(unsigned char), num1, fp2);
+		unsigned long totalnum=1, wrongnum=0,m=0;
+		while (totalnum<=(num1+1))
+		{
+			totalnum++;
+			if (dst1[m] != dst2[m]) wrongnum++;
+			m++;
+		}
+		double n;
+		n = 1 - (wrongnum / totalnum);
+		cout << "bit error rate is " << n << endl;
+		return 0;
+	}
 }
-
