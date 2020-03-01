@@ -1,6 +1,9 @@
 #pragma once
 #include<opencv2/opencv.hpp>
-
+#include <iostream>
+#include <fstream>
+#include <cassert>
+#include <string>
 #include<cstdio>
 
 namespace Code
@@ -14,5 +17,5 @@ namespace Code
 	void BulidFrameFlag(Mat& mat, FrameType frameType, unsigned long tailLen);
 	Mat CodeFrame(FrameType frameType, unsigned char* info, unsigned long tailLen);
 	Mat amplify(const Mat& src);
-	void Main(unsigned char* info, unsigned long len, const char* savePath, const char* outputFormat);  //传入文件地址，长度，保存路径，保存格式
+	void Main(unsigned char* info, unsigned long len, const char* savePath, const char* outputFormat);
 }
