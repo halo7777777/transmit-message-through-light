@@ -22,25 +22,14 @@ int main()
 		cout << "Please input size :";
 		cin >> size;//需要生成文件的大小，单位字节
 		char filename[] = "in.bin";
-		converter.GenerateRandFile(filename, size);//��������������ļ�
-		unsigned char* bytes = converter.FileToByte(filename, &size);//��ȡ�ļ����ɵ�Byte����
-
-		/*
-		һ����bytes����ͼ��Ĵ���
-		������ʽΪ%05d.png
-		�����imageSrcĿ¼
-		*/
-		Code::Main(bytes, size, "C:\\Users\\18705996097\\Desktop\\111", "png");
 		converter.GenerateRandFile(filename, size);//生成随机二进制文件
 		unsigned char* bytes = converter.FileToByte(filename, &size);//读取文件生成的Byte数组
-
 		/*
 		一段由bytes生成图像的代码
 //		命名格式为%05d.png
 //		输出在imageSrc目录
 //		*/
-		Code::Main(bytes, size, "imageSrc\\", "png");
-
+		Code::Main(bytes, size, "C:\\Users\\18705996097\\Desktop\\111", "png");
 		int fps = 10;//测试用每秒10帧试试
 		converter.PicTransToVideo(fps);
 		return 0;
