@@ -97,7 +97,7 @@ namespace Code
     Mat CodeFrame(FrameType frameType, unsigned char* info, unsigned long tailLen)
     {
         Mat codeMat = Mat(FrameSize, FrameSize, CV_8UC3, Vec3b(255, 255, 255));     //底片为白色
-        if (frameType != FrameType::End && frameType != FrameType::StartAndEnd)      
+        if (frameType == FrameType::Normal)      
             tailLen = BytesPerFrame;
         BulidSafeArea(codeMat);       //绘制安全带
         BulidQrPoint(codeMat);        //绘制定位码

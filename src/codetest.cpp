@@ -5,8 +5,8 @@ int main()
 {
     
     FILE* p;
-    fopen_s(&p,"C:\\Users\\18705996097\\Desktop\\项目\\qrcode\\1.txt", "rb");
-    unsigned int current_read_position = ftell(p);
+    fopen_s(&p,"C:\\Users\\18705996097\\Desktop\\111\\in.bin", "rb");
+    unsigned long current_read_position = ftell(p);
     fseek(p, 0, SEEK_END);
     unsigned long size = ftell(p);
     fseek(p, current_read_position, SEEK_SET);
@@ -19,7 +19,7 @@ int main()
 
 
 
-    Code::Main(dst, size, "C:\\Users\\18705996097\\Desktop\\项目\\qrcode", "png");
+    Code::Main(dst, size, "C:\\Users\\18705996097\\Desktop\\111", "png");
 
 
     delete[]dst;
