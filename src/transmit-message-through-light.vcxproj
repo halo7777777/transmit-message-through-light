@@ -74,7 +74,7 @@
     <LibraryPath>lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>include;$(IncludePath)</IncludePath>
+    <IncludePath>include;..\src;$(IncludePath)</IncludePath>
     <LibraryPath>lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -104,7 +104,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <AdditionalLibraryDirectories>lib</AdditionalLibraryDirectories>
-      <AdditionalDependencies>zlibwapi.lib;opencv_world420.lib;opencv_world420d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>zlibwapi.lib;opencv_world420d.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -138,7 +138,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="code.cpp" />
+    <ClCompile Include="codetest.cpp" />
+    <ClCompile Include="Decode.cpp" />
     <ClCompile Include="FileConvert.cpp" />
+    <ClCompile Include="jz.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="opencv_img_array\cvtest.cpp" />
     <ClCompile Include="parse.cpp" />
@@ -147,6 +151,8 @@
     <ClCompile Include="zlibtest.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="code.h" />
+    <ClInclude Include="Decode.h" />
     <ClInclude Include="FileConvert.h" />
     <ClInclude Include="opencv_img_array\img_code.h" />
     <ClInclude Include="opencv_img_array\img_decode.h" />

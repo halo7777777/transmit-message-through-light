@@ -1,4 +1,3 @@
-//传入文件地址，长度，保存路径，保存格式
 #include"code.h"
 
 #define Show_Img(src) do\
@@ -9,8 +8,8 @@
 }while(0);
 
 namespace Code
-{
-    constexpr int BytesPerFrame = 1054; 
+{   
+    constexpr unsigned long BytesPerFrame = 1054; 
     constexpr int FrameSize = 100;
     constexpr int FrameOutputRate = 10;
     constexpr int SafeAreaWidth = 2;
@@ -41,13 +40,12 @@ namespace Code
         StartAndEnd = 2,
         Normal = 3
     };
-    void Main(unsigned char* info, unsigned long len, const char* savePath, const char* outputFormat) // 传入文件地址，长度，保存路径，保存格式
+    void Main(unsigned char* info, unsigned long len, const char* savePath, const char* outputFormat) // 字符串信息，长度，保存路径，保存格式
     {
         Mat output;
         char fileName[128];
         int count = 0;
-        if (len <= 0);
-        else if (len <= BytesPerFrame)
+        if (len <= BytesPerFrame)
         {
             unsigned char BUF[BytesPerFrame + 5];
             memcpy(BUF, info, sizeof(unsigned char) * len);
@@ -60,7 +58,6 @@ namespace Code
         else
         {          
             output = amplify(CodeFrame(FrameType::Start, info, len));
-            len -= BytesPerFrame;
             sprintf_s(fileName, "%s\\%05d.%s", savePath, count++, outputFormat);
             imwrite(fileName, output);
             do
@@ -99,7 +96,7 @@ namespace Code
     }
     Mat CodeFrame(FrameType frameType, unsigned char* info, unsigned long tailLen)
     {
-        Mat codeMat = Mat(FrameSize, FrameSize, CV_8UC3, Vec3b(255, 255, 255));     //底片为黑色
+        Mat codeMat = Mat(FrameSize, FrameSize, CV_8UC3, Vec3b(255, 255, 255));     //底片为白色
         if (frameType != FrameType::End && frameType != FrameType::StartAndEnd)      
             tailLen = BytesPerFrame;
         BulidSafeArea(codeMat);       //绘制安全带

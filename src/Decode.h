@@ -23,4 +23,3 @@ public:
 	int getLength(Mat& srcImg);
 	void rotate(Mat& srcImg, Mat& dst);
 };
-

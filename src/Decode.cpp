@@ -1,25 +1,25 @@
 #include "Decode.h"
-void Decode::rotate(Mat& srcImg, Mat& dst)//´«ÈëÔ´Í¼Ïñ£¬Ä¿±ê¾ØÕó,µÃµ½¾ÀÆ«ºóµÄÍ¼Ïñ´æÔÚdst
+void Decode::rotate(Mat& srcImg, Mat& dst)//ä¼ å…¥æºå›¾åƒï¼Œç›®æ ‡çŸ©é˜µ,å¾—åˆ°çº ååçš„å›¾åƒå­˜åœ¨dst
 {
 	Mat newImg = srcImg;
 	QRCodeDetector qrDetector;
 	vector<Point2f> list;
 	qrDetector.detect(srcImg, list);
-	Mat warpPerspective_mat(3, 3, CV_32FC1);//3£¬3Ğı×ª¾ØÕó
-	Mat warpPerspective_dst = Mat::zeros(ROW, COL, newImg.type());//Ğı×ªºóµÄÄ¿±ê
+	Mat warpPerspective_mat(3, 3, CV_32FC1);//3ï¼Œ3æ—‹è½¬çŸ©é˜µ
+	Mat warpPerspective_dst = Mat::zeros(ROW, COL, newImg.type());//æ—‹è½¬åçš„ç›®æ ‡
 
-	vector<Point2f> dstRect;//Ä¿µÄµã
+	vector<Point2f> dstRect;//ç›®çš„ç‚¹
 	dstRect.push_back(Point2f(0, 0));
 	dstRect.push_back(Point2f(ROW-1, 0));
 	dstRect.push_back(Point2f(ROW-1, COL-1));
 	dstRect.push_back(Point2f(0, COL-1));
-	warpPerspective_mat = getPerspectiveTransform(list, dstRect);//Éú³ÉĞı×ª¾ØÕó
-	warpPerspective(newImg, warpPerspective_dst, warpPerspective_mat, warpPerspective_dst.size());//½øĞĞÍ¸ÊÓ±ä»»
+	warpPerspective_mat = getPerspectiveTransform(list, dstRect);//ç”Ÿæˆæ—‹è½¬çŸ©é˜µ
+	warpPerspective(newImg, warpPerspective_dst, warpPerspective_mat, warpPerspective_dst.size());//è¿›è¡Œé€è§†å˜æ¢
 
 	dst = warpPerspective_dst;
 	cvtColor(warpPerspective_dst, dst, COLOR_BGR2GRAY);
 	threshold(dst, dst, 150, 255, THRESH_BINARY | THRESH_OTSU);
-	cvtColor(dst, dst, COLOR_GRAY2BGR);//ÑÕÉ«»Ö¸´
+	cvtColor(dst, dst, COLOR_GRAY2BGR);//é¢œè‰²æ¢å¤
 	//srcImg = dst;
 }
 
@@ -31,18 +31,18 @@ int Decode::getBit(Vec3b pix)
 	c = pix[2];
 	if (a == 0 && b == 0 && c == 0)
 	{
-		return 0;//ºÚ
+		return 0;//é»‘
 	}
 	else if (a == 255 && b == 255 && c == 255)
 	{
-		return 1;//°×
+		return 1;//ç™½
 	}
 }
 
 int Decode::getType(Mat& srcImg)
 {
 	int typecode = 0;//code=3
-	int k = 1;//KÎª¶ş½øÖÆÔËËãµÄÏµÊı
+	int k = 1;//Kä¸ºäºŒè¿›åˆ¶è¿ç®—çš„ç³»æ•°
 	for (int i = 0; i < 4; i++)
 	{
 		Vec3b pix = srcImg.at<Vec3b>(16, i);
@@ -59,7 +59,7 @@ int Decode::getType(Mat& srcImg)
 		return END;
 	case 15:
 		return SINGLE;
-	}//Ğ¡¶Ë·¨×Ö½Ú
+	}//å°ç«¯æ³•å­—èŠ‚
 }
 
 int Decode::getLength(Mat& srcImg)
@@ -90,10 +90,10 @@ unsigned char* Decode::decode(Mat& srcImg,int type,int& length)
 	unsigned char* tmp = new unsigned char[length];
 	for (int i = 0; i < length; i++) { tmp[i] = 0; }
 	//block A
-	int index = 0;//Ôİ´æÊı×éµÄÏÂ±ê
-	for (int i = 17; i < 80; i++)//±éÀúĞĞ
+	int index = 0;//æš‚å­˜æ•°ç»„çš„ä¸‹æ ‡
+	for (int i = 17; i < 80; i++)//éå†è¡Œ
 	{
-		for (int part = 0; part < 2; part++)//¼ÆËã×Ö½Ú
+		for (int part = 0; part < 2; part++)//è®¡ç®—å­—èŠ‚
 		{
 			int code = 0;
 			int k = 1;
@@ -107,13 +107,13 @@ unsigned char* Decode::decode(Mat& srcImg,int type,int& length)
 			tmp[index++] = (unsigned char)code;
 		}
 	}
-	//block A½âÂëÍê³É
+	//block Aè§£ç å®Œæˆ
 
-	//Block B½âÂë
+	//Block Bè§£ç 
 
-	for (int i = 0; i < 16; i++)//±éÀúĞĞ
+	for (int i = 0; i < 16; i++)//éå†è¡Œ
 	{
-		for (int part = 0; part < 8; part++)//¼ÆËã×Ö½Ú
+		for (int part = 0; part < 8; part++)//è®¡ç®—å­—èŠ‚
 		{
 			int code = 0;
 			int k = 1;
@@ -128,13 +128,13 @@ unsigned char* Decode::decode(Mat& srcImg,int type,int& length)
 		}
 	}
 
-	//Block B½âÂëÍê³É
+	//Block Bè§£ç å®Œæˆ
 
-	//Block C½âÂë¿ªÊ¼
+	//Block Cè§£ç å¼€å§‹
 
-	for (int i = 16; i < 96; i++)//±éÀúĞĞ
+	for (int i = 16; i < 96; i++)//éå†è¡Œ
 	{
-		for (int part = 0; part < 10; part++)//¼ÆËã×Ö½Ú
+		for (int part = 0; part < 10; part++)//è®¡ç®—å­—èŠ‚
 		{
 			int code = 0;
 			int k = 1;
@@ -150,4 +150,5 @@ unsigned char* Decode::decode(Mat& srcImg,int type,int& length)
 	}
 
 	return tmp;
+
 }
