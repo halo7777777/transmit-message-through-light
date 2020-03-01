@@ -13,15 +13,13 @@ class Decode
 private:
 	const int ROW;
 	const int COL;
-	void rotate(Mat& srcImg, Mat& dst);
 	int  getBit(Vec3b pix);
-
+	int getType(Mat& srcImg);
+	void rotate(Mat& srcImg, Mat& dst);
+	int getLength(Mat& srcImg);
 
 public:
 	Decode(int size=96) :ROW(size), COL(size){}
-	unsigned char* decode(Mat& srcImg, int type, int& length);
-	int getType(Mat& srcImg);
-	int getLength(Mat& srcImg);
+	unsigned char* decode(Mat& srcImg, int& length, int& type);
 
 };
-

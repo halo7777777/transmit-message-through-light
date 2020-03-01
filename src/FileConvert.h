@@ -8,7 +8,6 @@ class FileConvert
 private:
 	FILE* p;
 	unsigned char* dst;
-	unsigned long GetFileSize(FILE* p);
 	void GenerateRandomArray(unsigned char* src, unsigned long size);
 public:
 	~FileConvert();
@@ -17,4 +16,5 @@ public:
 	void GenerateRandFile(char filename[], unsigned long size);
 	void PicTransToVideo(int picNumPersec);
 	void VideoTransToPic();
+	unsigned long GetFileSize(FILE* p);
 };
