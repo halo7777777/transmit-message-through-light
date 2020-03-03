@@ -1,12 +1,5 @@
 #include"code.h"
 
-#define Show_Img(src) do\
-{\
-    Mat temp = amplify(src);\
-    namedWindow("img", WINDOW_NORMAL);\
-    imshow("Code_DEBUG", temp);\
-}while(0);
-
 namespace Code
 {   
     constexpr unsigned long BytesPerFrame = 1054; 
@@ -36,9 +29,10 @@ namespace Code
     enum class FrameType
     {
         Start = 0,
-        End = 1,
-        StartAndEnd = 2,
-        Normal = 3
+        Normal = 1,
+        End = 2,
+        Single = 3,
+
     };
     void Main(unsigned char* info, unsigned long len, const char* savePath, const char* outputFormat) // 字符串信息，长度，保存路径，保存格式
     {
@@ -51,13 +45,14 @@ namespace Code
             memcpy(BUF, info, sizeof(unsigned char) * len);
             for (int i = len; i <= BytesPerFrame; ++i)
                 BUF[i] = rand() % 256;
-            output = amplify(CodeFrame(FrameType::StartAndEnd, BUF, len));
+            output = amplify(CodeFrame(FrameType::Single, BUF, len, 0));
             sprintf_s(fileName, "%s\\%05d.%s", savePath, count++, outputFormat);
             imwrite(fileName, output);
         }
         else
-        {          
-            output = amplify(CodeFrame(FrameType::Start, info, len));
+        {
+            int PicNum = 0;
+            output = amplify(CodeFrame(FrameType::Start, info, len, PicNum++));
             sprintf_s(fileName, "%s\\%05d.%s", savePath, count++, outputFormat);
             imwrite(fileName, output);
             do
@@ -65,17 +60,29 @@ namespace Code
                 len -= BytesPerFrame;
                 info += BytesPerFrame;
                 if (len > BytesPerFrame)
-                    output = amplify(CodeFrame(FrameType::Normal, info, BytesPerFrame));
+                    output = amplify(CodeFrame(FrameType::Normal, info, BytesPerFrame, PicNum++));
                 else
                 {
                     unsigned char BUF[BytesPerFrame + 5];
                     memcpy(BUF, info, sizeof(unsigned char) * len);
                     for (int i = len; i <= BytesPerFrame; ++i)
                         BUF[i] = rand() % 256;
-                    output = amplify(CodeFrame(FrameType::End, BUF, len));
+                    output = amplify(CodeFrame(FrameType::End, BUF, len, PicNum++));
                 }
                 sprintf_s(fileName, "%s\\%05d.%s", savePath, count++, outputFormat);
                 imwrite(fileName, output);
+/*              测试是否能用于定位
+                int i = 0;
+                Mat dst = imread(fileName);
+                QRCodeDetector qrDetector;
+                vector<Point2f> list;
+                qrDetector.detect(dst, list);
+                if (list.empty())
+                {
+                    cout << i <<" nothing" << endl;
+                }
+                i++;
+*/
             } while (len > BytesPerFrame);
         }
         return;
@@ -94,15 +101,16 @@ namespace Code
         }
         return output;
     }
-    Mat CodeFrame(FrameType frameType, unsigned char* info, unsigned long tailLen)
+    Mat CodeFrame(FrameType frameType, unsigned char* info, unsigned long tailLen, int PicNum)
     {
         Mat codeMat = Mat(FrameSize, FrameSize, CV_8UC3, Vec3b(255, 255, 255));     //底片为白色
         if (frameType == FrameType::Start || frameType == FrameType::Normal)       
             //3/1/14:30决定不存最大长度，最大长度由最后一张长度+BytesPerFrame*张数计算      
             tailLen = BytesPerFrame;
         BulidSafeArea(codeMat);       //绘制安全带
-        BulidQrPoint(codeMat);        //绘制定位码
+        BulidQrPoint(codeMat);        //绘制定位码       
         BulidFrameFlag(codeMat, frameType, tailLen);
+        BulidPicNum(codeMat, PicNum);
         if (tailLen != BytesPerFrame)           //编码时整张图都要编码，未确定的是随机数
             tailLen = BytesPerFrame;
         for (int i = 0; i < areanum && tailLen > 0; ++i)
@@ -112,6 +120,7 @@ namespace Code
             tailLen -= len_now;
             info += len_now;
         }
+        
         return codeMat;
     }
     void BulidSafeArea(Mat& mat)  //创建安全码带
@@ -189,28 +198,20 @@ namespace Code
         switch (frameType)
         {
         case FrameType::Start:
-            mat.at<Vec3b>(BPatternSize, SafeAreaWidth) = pixel[White];
+            mat.at<Vec3b>(BPatternSize, SafeAreaWidth) = pixel[Black];
+            mat.at<Vec3b>(BPatternSize, SafeAreaWidth + 1) = pixel[Black];
+            break;
+        case FrameType::Normal:
+            mat.at<Vec3b>(BPatternSize, SafeAreaWidth) = pixel[Black];
             mat.at<Vec3b>(BPatternSize, SafeAreaWidth + 1) = pixel[White];
-            mat.at<Vec3b>(BPatternSize, SafeAreaWidth + 2) = pixel[Black];
-            mat.at<Vec3b>(BPatternSize, SafeAreaWidth + 3) = pixel[Black];
             break;
         case FrameType::End:
-            mat.at<Vec3b>(BPatternSize, SafeAreaWidth) = pixel[Black];
+            mat.at<Vec3b>(BPatternSize, SafeAreaWidth) = pixel[White];
             mat.at<Vec3b>(BPatternSize, SafeAreaWidth + 1) = pixel[Black];
-            mat.at<Vec3b>(BPatternSize, SafeAreaWidth + 2) = pixel[White];
-            mat.at<Vec3b>(BPatternSize, SafeAreaWidth + 3) = pixel[White];
             break;
-        case FrameType::StartAndEnd:
+        case FrameType::Single:
             mat.at<Vec3b>(BPatternSize, SafeAreaWidth) = pixel[White];
             mat.at<Vec3b>(BPatternSize, SafeAreaWidth + 1) = pixel[White];
-            mat.at<Vec3b>(BPatternSize, SafeAreaWidth + 2) = pixel[White];
-            mat.at<Vec3b>(BPatternSize, SafeAreaWidth + 3) = pixel[White];
-            break;
-        default:
-            mat.at<Vec3b>(BPatternSize, SafeAreaWidth) = pixel[Black];
-            mat.at<Vec3b>(BPatternSize, SafeAreaWidth + 1) = pixel[Black];
-            mat.at<Vec3b>(BPatternSize, SafeAreaWidth + 2) = pixel[Black];
-            mat.at<Vec3b>(BPatternSize, SafeAreaWidth + 3) = pixel[Black];
             break;
         }
         for (int i = 4; i < 16; ++i)
@@ -218,5 +219,10 @@ namespace Code
             mat.at<Vec3b>(BPatternSize, SafeAreaWidth + i) = pixel[(tailLen & 1) ? 7 : 0];
             tailLen >>= 1;
         }
+    }
+    void BulidPicNum(Mat& mat, int PicNum)
+    {
+        mat.at<Vec3b>(BPatternSize, SafeAreaWidth + 2) = pixel[(PicNum & 1) ? 7 : 0];
+        mat.at<Vec3b>(BPatternSize, SafeAreaWidth + 3) = pixel[(PicNum & 1) ? 7 : 0];
     }
 }

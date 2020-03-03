@@ -15,7 +15,8 @@ namespace Code
 	void BulidQrPoint(Mat& mat);              //定位图案
 	void BulidInfoRect(Mat& mat, unsigned char* info, unsigned long len, int areaID);
 	void BulidFrameFlag(Mat& mat, FrameType frameType, unsigned long tailLen);
-	Mat CodeFrame(FrameType frameType, unsigned char* info, unsigned long tailLen);
+	void BulidPicNum(Mat& mat, int PicNum);
+	Mat CodeFrame(FrameType frameType, unsigned char* info, unsigned long tailLen, int PicNum);
 	Mat amplify(const Mat& src);
 	void Main(unsigned char* info, unsigned long len, const char* savePath, const char* outputFormat);
 }
