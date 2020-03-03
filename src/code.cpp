@@ -2,24 +2,26 @@
 
 namespace Code
 {   
-    constexpr unsigned long BytesPerFrame = 1054; 
+    constexpr unsigned long BytesPerFrame = 1022; 
     constexpr int FrameSize = 100;
     constexpr int FrameOutputRate = 10;
     constexpr int SafeAreaWidth = 2;
     constexpr int BPatternSize = 18;
   //  constexpr int SPatternSize = 5;    
-    constexpr int areanum = 3;
+    constexpr int areanum = 5;
     const Vec3b pixel[8] =
     {
         Vec3b(0,0,0),Vec3b(0,0,255),Vec3b(0,255,0),Vec3b(0,255,255),
         Vec3b(255,0,0),Vec3b(255,0,255),Vec3b(255,255,0),Vec3b(255,255,255)
     };
-    const unsigned long len_max[areanum] = {126,128,800};
+    const unsigned long len_max[areanum] = {126,128,512,128,128};
     const int areapos[areanum][2][2] =
     {//[2][2],第一维度代表高宽，第二维度代表左上角坐标
         {{63,16},{BPatternSize + 1,SafeAreaWidth}},
         {{16,64},{SafeAreaWidth,BPatternSize}},
-        {{80,80},{BPatternSize,BPatternSize}},
+        {{64,64},{BPatternSize,BPatternSize}},
+        {{16,64},{FrameSize-BPatternSize,BPatternSize}},
+        {{64,16},{BPatternSize,FrameSize-BPatternSize}}
     };
     enum color
     {
@@ -145,7 +147,8 @@ namespace Code
         {
             {0,0},
             {0,FrameSize - BPatternSize},
-            {FrameSize - BPatternSize,0}
+            {FrameSize - BPatternSize,0},
+            {FrameSize - BPatternSize,FrameSize-BPatternSize}
         };
         const Vec3b vec3bBig[9] =
         {
@@ -159,7 +162,7 @@ namespace Code
             pixel[White],
             pixel[White]
         };
-        for (int i = 0; i < 3; ++i)
+        for (int i = 0; i < 4; ++i)
             for (int j = 0; j < BPatternSize; ++j)
                 for (int k = 0; k < BPatternSize; ++k)
                     mat.at<Vec3b>(pointPos[i][0] + j, pointPos[i][1] + k) =
