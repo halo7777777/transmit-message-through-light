@@ -2,6 +2,7 @@
 #include<ctime>
 #include<cstdio>
 #include<string>
+#include<io.h>
 using namespace std;
 class FileConvert
 {
@@ -17,4 +18,5 @@ public:
 	void PicTransToVideo(int picNumPersec);
 	void VideoTransToPic();
 	unsigned long GetFileSize(FILE* p);
+	int GetFilesNumber(string path);
 };

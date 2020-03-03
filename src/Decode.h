@@ -1,5 +1,9 @@
 #pragma once
 #include<opencv2/opencv.hpp>
+
+#include "opencv2/imgproc.hpp"
+
+#include<opencv2/imgproc/types_c.h>
 #define BEGIN 0
 #define NORMAL 1
 #define END 2
@@ -17,6 +21,8 @@ private:
 	int getType(Mat& srcImg);
 	void rotate(Mat& srcImg, Mat& dst);
 	int getLength(Mat& srcImg);
+	Point Center_cal(vector<vector<Point> > contours, int i);
+	void locate(Mat& src, Mat& dst);
 
 public:
 	Decode(int size=96) :ROW(size), COL(size){}
