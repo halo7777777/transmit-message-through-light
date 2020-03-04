@@ -17,12 +17,12 @@ class Decode
 private:
 	const int ROW;
 	const int COL;
-	int  getBit(Vec3b pix);
-	int getType(Mat& srcImg);
-	void rotate(Mat& srcImg, Mat& dst);
-	int getLength(Mat& srcImg);
-	Point Center_cal(vector<vector<Point> > contours, int i);
-	void locate(Mat& src, Mat& dst);
+
+	
+	void rotate(Mat& srcImg, Mat& dst);//弃用
+	
+	Point Center_cal(vector<vector<Point> > contours, int i);//弃用
+	void locate(Mat& src, Mat& dst);//弃用
 	bool QrRate(float rate);
 	bool QrColorRateX(cv::Mat& image, int flag);
 	bool QrColorRateY(cv::Mat& image, int flag);
@@ -33,13 +33,15 @@ private:
 	double Ratete(Mat count);
 	bool isCorner(Mat& image);
 	void anchorSequence(vector<Point2f>& anchor_center);
-	int findQranchor(Mat& srcImg, Mat& dst);
+	//
 	
 
 
 public:
 	Decode(int size=96) :ROW(size), COL(size){}
 	unsigned char* decode(Mat& srcImg, int& length, int& type);
-	
-
+	int findQranchor(Mat& srcImg, Mat& dst);
+	int  getBit(Vec3b pix);//输入坐标点，获取 01 
+	int getType(Mat& srcImg);//获取二维码类型 //传入图片需要96x96
+	int getLength(Mat& srcImg);//传入图片需要96x96
 };

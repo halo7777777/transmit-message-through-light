@@ -616,7 +616,7 @@ int Decode::getLength(Mat& srcImg)
 {
 	int length = 0;
 	int k = 1;
-	for (int i = 0; i < 12; i++)
+	for (int i = 0; i < 12; i++)//第16行[3,15]用来存长度
 	{
 		Vec3b pix = srcImg.at<Vec3b>(16, 4+i);
 		length += k * getBit(pix);
