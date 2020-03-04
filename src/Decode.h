@@ -23,9 +23,23 @@ private:
 	int getLength(Mat& srcImg);
 	Point Center_cal(vector<vector<Point> > contours, int i);
 	void locate(Mat& src, Mat& dst);
+	bool QrRate(float rate);
+	bool QrColorRateX(cv::Mat& image, int flag);
+	bool QrColorRateY(cv::Mat& image, int flag);
+	bool IsQrColorRate(cv::Mat& image, int flag);
+	Mat CropImage(Mat& img, RotatedRect& rotatedRect);
+	bool QrPoint(vector<Point>& contour, Mat& img, int i);
+	Mat transformCorner(Mat src, RotatedRect rect);
+	double Ratete(Mat count);
+	bool isCorner(Mat& image);
+	void anchorSequence(vector<Point2f>& anchor_center);
+	int findQranchor(Mat& srcImg, Mat& dst);
+	
+
 
 public:
 	Decode(int size=96) :ROW(size), COL(size){}
 	unsigned char* decode(Mat& srcImg, int& length, int& type);
+	
 
 };
