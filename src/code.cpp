@@ -1,27 +1,27 @@
 #include"code.h"
 
 namespace Code
-{   
-    constexpr unsigned long BytesPerFrame = 1022; 
+{
+    constexpr unsigned long BytesPerFrame = 1022;
     constexpr int FrameSize = 100;
     constexpr int FrameOutputRate = 10;
     constexpr int SafeAreaWidth = 2;
     constexpr int BPatternSize = 18;
-  //  constexpr int SPatternSize = 5;    
+    //  constexpr int SPatternSize = 5;    
     constexpr int areanum = 5;
     const Vec3b pixel[8] =
     {
         Vec3b(0,0,0),Vec3b(0,0,255),Vec3b(0,255,0),Vec3b(0,255,255),
         Vec3b(255,0,0),Vec3b(255,0,255),Vec3b(255,255,0),Vec3b(255,255,255)
     };
-    const unsigned long len_max[areanum] = {126,128,512,128,128};
+    const unsigned long len_max[areanum] = { 126,128,512,128,128 };
     const int areapos[areanum][2][2] =
     {//[2][2],第一维度代表高宽，第二维度代表左上角坐标
         {{63,16},{BPatternSize + 1,SafeAreaWidth}},
         {{16,64},{SafeAreaWidth,BPatternSize}},
         {{64,64},{BPatternSize,BPatternSize}},
-        {{16,64},{FrameSize-BPatternSize,BPatternSize}},
-        {{64,16},{BPatternSize,FrameSize-BPatternSize}}
+        {{16,64},{FrameSize - BPatternSize,BPatternSize}},
+        {{64,16},{BPatternSize,FrameSize - BPatternSize}}
     };
     enum color
     {
@@ -73,18 +73,18 @@ namespace Code
                 }
                 sprintf_s(fileName, "%s\\%05d.%s", savePath, count++, outputFormat);
                 imwrite(fileName, output);
-/*              测试是否能用于定位
-                int i = 0;
-                Mat dst = imread(fileName);
-                QRCodeDetector qrDetector;
-                vector<Point2f> list;
-                qrDetector.detect(dst, list);
-                if (list.empty())
-                {
-                    cout << i <<" nothing" << endl;
-                }
-                i++;
-*/
+                /*              测试是否能用于定位
+                                int i = 0;
+                                Mat dst = imread(fileName);
+                                QRCodeDetector qrDetector;
+                                vector<Point2f> list;
+                                qrDetector.detect(dst, list);
+                                if (list.empty())
+                                {
+                                    cout << i <<" nothing" << endl;
+                                }
+                                i++;
+                */
             } while (len > BytesPerFrame);
         }
         return;
@@ -106,7 +106,7 @@ namespace Code
     Mat CodeFrame(FrameType frameType, unsigned char* info, unsigned long tailLen, int PicNum)
     {
         Mat codeMat = Mat(FrameSize, FrameSize, CV_8UC3, Vec3b(255, 255, 255));     //底片为白色
-        if (frameType == FrameType::Start || frameType == FrameType::Normal)       
+        if (frameType == FrameType::Start || frameType == FrameType::Normal)
             //3/1/14:30决定不存最大长度，最大长度由最后一张长度+BytesPerFrame*张数计算      
             tailLen = BytesPerFrame;
         BulidSafeArea(codeMat);       //绘制安全带
@@ -122,7 +122,7 @@ namespace Code
             tailLen -= len_now;
             info += len_now;
         }
-        
+
         return codeMat;
     }
     void BulidSafeArea(Mat& mat)  //创建安全码带
@@ -148,7 +148,7 @@ namespace Code
             {0,0},
             {0,FrameSize - BPatternSize},
             {FrameSize - BPatternSize,0},
-            {FrameSize - BPatternSize,FrameSize-BPatternSize}
+            {FrameSize - BPatternSize,FrameSize - BPatternSize}
         };
         const Vec3b vec3bBig[9] =
         {

@@ -1,3 +1,4 @@
+#pragma once
 #define _CRT_SECURE_NO_WARNINGS
 #include "FileConvert.h"
 #include<iostream>
@@ -73,7 +74,7 @@ void FileConvert::PicTransToVideo(int picNumPersec)//每秒帧数
 
 void FileConvert::VideoTransToPic()
 {
-	string firstSetting, formatName, videoName,str3;
+	string firstSetting, formatName, videoName, str3;
 	char command[200];
 	firstSetting = "ffmpeg -i videoSrc\\";
 	formatName = " imageOutput\\%05d.png";

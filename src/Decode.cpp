@@ -1,3 +1,4 @@
+#pragma once
 #include "Decode.h"
 
 Point Decode::Center_cal(vector<vector<Point> > contours, int i)
@@ -11,7 +12,7 @@ Point Decode::Center_cal(vector<vector<Point> > contours, int i)
 	return point1;
 }
 
-void Decode::locate(Mat& src,Mat& dst)
+void Decode::locate(Mat& src, Mat& dst)
 {
 	Mat src_all = src.clone();
 	RNG rng(12345);
@@ -40,15 +41,15 @@ void Decode::locate(Mat& src,Mat& dst)
 			if (c >= 5)
 			{
 				contours2.push_back(contours[i]);
-				drawContours(drawing, contours, i,CV_RGB(rng.uniform(0, 255), rng.uniform(0, 255), rng.uniform(0, 255)), 1, 8);
+				drawContours(drawing, contours, i, CV_RGB(rng.uniform(0, 255), rng.uniform(0, 255), rng.uniform(0, 255)), 1, 8);
 			}
 		}
 	}
 
 	for (int i = 0; i < contours2.size(); i++)
-		drawContours(drawing2, contours2, i,CV_RGB(rng.uniform(100, 255), rng.uniform(100, 255), rng.uniform(100, 255)), -1, 4,hierarchy[0][2], 0, Point());
+		drawContours(drawing2, contours2, i, CV_RGB(rng.uniform(100, 255), rng.uniform(100, 255), rng.uniform(100, 255)), -1, 4, hierarchy[0][2], 0, Point());
 	Point point[3];
-	for (int i = 0; i < contours2.size(); i++) 
+	for (int i = 0; i < contours2.size(); i++)
 	{
 		point[i] = Center_cal(contours2, i);
 	}
@@ -104,9 +105,9 @@ void Decode::rotate(Mat& srcImg, Mat& dst)//传入源图像，目标矩阵,得�
 
 	vector<Point2f> dstRect;//目的点
 	dstRect.push_back(Point2f(0, 0));
-	dstRect.push_back(Point2f(ROW-1, 0));
-	dstRect.push_back(Point2f(ROW-1, COL-1));
-	dstRect.push_back(Point2f(0, COL-1));
+	dstRect.push_back(Point2f(ROW - 1, 0));
+	dstRect.push_back(Point2f(ROW - 1, COL - 1));
+	dstRect.push_back(Point2f(0, COL - 1));
 	warpPerspective_mat = getPerspectiveTransform(list, dstRect);//生成旋转矩阵
 	warpPerspective(newImg, warpPerspective_dst, warpPerspective_mat, warpPerspective_dst.size());//进行透视变换
 
@@ -205,7 +206,7 @@ bool Decode::QrColorRateX(cv::Mat& image, int flag)
 	return true;
 }
 
-bool Decode::QrColorRateY(cv::Mat& image, int flag) 
+bool Decode::QrColorRateY(cv::Mat& image, int flag)
 {
 	int nc = image.cols / 2;
 	int nr = image.rows;
@@ -460,7 +461,7 @@ void Decode::anchorSequence(vector<Point2f>& anchor_center)
 	anchor_center.push_back(tmp_center[3]);
 }
 
-int Decode::findQranchor(Mat& srcImg,Mat& dst)
+int Decode::findQranchor(Mat& srcImg, Mat& dst)
 {
 	if (!srcImg.data)
 		return -1;
@@ -618,24 +619,24 @@ int Decode::getLength(Mat& srcImg)
 	int k = 1;
 	for (int i = 0; i < 12; i++)//第16行[3,15]用来存长度
 	{
-		Vec3b pix = srcImg.at<Vec3b>(16, 4+i);
+		Vec3b pix = srcImg.at<Vec3b>(16, 4 + i);
 		length += k * getBit(pix);
 		k *= 2;
 	}
 	return length;
 }
 
-unsigned char* Decode::decode(Mat& srcImg,int& length,int& type)
+unsigned char* Decode::decode(Mat& srcImg, int& length, int& type)
 {
 	Mat dst;
 	findQranchor(srcImg, dst);
 
 
 	type = getType(dst);
-	unsigned char* tmp=NULL;
+	unsigned char* tmp = NULL;
 	length = getLength(dst);
 	int tmplen;
-	if (type == SINGLE || type == END||type==NORMAL)
+	if (type == SINGLE || type == END || type == NORMAL)
 	{
 		tmplen = length;
 		tmp = new unsigned char[tmplen];
@@ -644,7 +645,7 @@ unsigned char* Decode::decode(Mat& srcImg,int& length,int& type)
 	else if (type == BEGIN)
 	{
 		tmplen = MAXSIZE;
-		 tmp = new unsigned char[tmplen];
+		tmp = new unsigned char[tmplen];
 	}
 	for (int i = 0; i < tmplen; i++) { tmp[i] = 0; }
 	//block A
@@ -661,7 +662,7 @@ unsigned char* Decode::decode(Mat& srcImg,int& length,int& type)
 				code += k * getBit(pix);
 				k *= 2;
 			}
-			if(index>= tmplen) return tmp;
+			if (index >= tmplen) return tmp;
 			tmp[index++] = (unsigned char)code;
 		}
 	}
@@ -677,7 +678,7 @@ unsigned char* Decode::decode(Mat& srcImg,int& length,int& type)
 			int k = 1;
 			for (int j = 0; j < 8; j++)
 			{
-				Vec3b pix = dst.at<Vec3b>(i, 16+j + part * 8);
+				Vec3b pix = dst.at<Vec3b>(i, 16 + j + part * 8);
 				code += k * getBit(pix);
 				k *= 2;
 			}
