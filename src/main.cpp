@@ -14,6 +14,7 @@ int main()
 	cout << "Calculate bit error rate" << endl;
 	cout << "input function you choose" << endl;
 	cin >> function;
+	
 	FileConvert converter;
 	if (function == 1)
 	{
@@ -29,7 +30,7 @@ int main()
 //		命名格式为%05d.png
 //		输出在imageSrc目录
 //		*/
-		Code::Main(bytes, size, "C:\\Users\\18705996097\\Desktop\\111", "png");
+		Code::Main(bytes, size, ".\\imageSrc", "png");
 		int fps = 10;//测试用每秒10帧试试
 		converter.PicTransToVideo(fps);
 		return 0;
@@ -43,6 +44,8 @@ int main()
 		Decode decoder;
 		int length;
 		converter.VideoTransToPic();
+		return 0;
+		
 		unsigned char* output = NULL;
 		int numOfPic = 0;//获取imageOutput目录下文件个数
 		Mat img;
@@ -83,6 +86,7 @@ int main()
 		char filename[] = "out.bin";
 		converter.ByteToFile(output, filename, length);
 	}
+	
 	else if (function == 3)
 	{
 		FileConvert file;
