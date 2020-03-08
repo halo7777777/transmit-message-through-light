@@ -1,4 +1,5 @@
 #pragma once
+#pragma once
 #include<opencv2/opencv.hpp>
 #include <iostream>
 #include <fstream>
@@ -11,8 +12,8 @@ namespace Code
 	using namespace cv;
 	using namespace std;
 	enum class FrameType;
-	void BulidSafeArea(Mat& mat);             //å®‰å…¨å¸¦
-	void BulidQrPoint(Mat& mat);              //å®šä½å›¾æ¡ˆ
+	void BulidSafeArea(Mat& mat);             //°²È«´ø
+	void BulidQrPoint(Mat& mat);              //¶¨Î»Í¼°¸
 	void BulidInfoRect(Mat& mat, unsigned char* info, unsigned long len, int areaID);
 	void BulidFrameFlag(Mat& mat, FrameType frameType, unsigned long tailLen);
 	void BulidPicNum(Mat& mat, int PicNum);
