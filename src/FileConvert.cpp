@@ -83,3 +83,23 @@ void FileConvert::VideoTransToPic()
 	sprintf_s(command, "%s", str3.c_str()); //转化类型
 	system(command);
 }
+
+
+int FileConvert::GetFilesNumber(string path)
+{
+	int cnt = 0;
+	//文件句柄，win10用long long，win7用long就可以了
+	long hFile = 0;
+	//文件信息 
+	struct _finddata_t fileinfo;
+	std::string p;
+	if ((hFile = _findfirst(p.assign(path).append("\\*").c_str(), &fileinfo)) != -1)
+	{
+		do
+		{
+			cnt++;
+		} while (_findnext(hFile, &fileinfo) == 0);
+		_findclose(hFile);
+	}
+	return cnt - 2;
+}
