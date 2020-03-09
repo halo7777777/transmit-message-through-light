@@ -8,7 +8,7 @@
 #define NORMAL 1
 #define END 2
 #define SINGLE 3
-#define MAXSIZE 1054
+#define MAXSIZE 1022
 
 using namespace std;
 using namespace cv;
@@ -44,4 +44,5 @@ public:
 	int  getBit(Vec3b pix);//输入坐标点，获取 01 
 	int getType(Mat& srcImg);//获取二维码类型 //传入图片需要96x96
 	int getLength(Mat& srcImg);//传入图片需要96x96
+	int getFlag(Mat& srcImg);
 };

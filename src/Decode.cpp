@@ -515,7 +515,7 @@ int Decode::findQranchor(Mat& srcImg, Mat& dst)
 			char tmp_name[20];
 			sprintf_s(tmp_name, "cor%d.png", i);
 			//imwrite(tmp_name, image);
-			if (isCorner(image))
+			if (1)//isCorner(image))
 			{
 				Point2f points[4];
 				rect.points(points);
@@ -568,8 +568,15 @@ int Decode::findQranchor(Mat& srcImg, Mat& dst)
 		Mat warp_mat = getPerspectiveTransform(src_center, origin_center);
 		warpPerspective(srcGray, output, warp_mat, srcImg.size());
 		resize(output, output, Size(96, 96));
+		//threshold(output, output, 150, 255, THRESH_BINARY | THRESH_OTSU);
+		//cvtColor(output, output, COLOR_GRAY2BGR);//颜色恢复
 		dst = output;
 		//imwrite("final.png", output);
+		return 1;
+	}
+	else
+	{
+		return 0;
 	}
 }
 
@@ -593,7 +600,7 @@ int Decode::getType(Mat& srcImg)
 {
 	int typecode = 0;//code=3
 	int k = 1;//K为二进制运算的系数
-	for (int i = 0; i < 4; i++)
+	for (int i = 0; i < 2; i++)
 	{
 		Vec3b pix = srcImg.at<Vec3b>(16, i);
 		typecode += k * getBit(pix);
@@ -601,13 +608,13 @@ int Decode::getType(Mat& srcImg)
 	}
 	switch (typecode)
 	{
-	case 3: //1100
+	case 0: //00
 		return BEGIN;
-	case 0://0000
+	case 2://01
 		return NORMAL;
-	case 12://0011
+	case 1://10
 		return END;
-	case 15:
+	case 3:
 		return SINGLE;
 	}//小端法字节
 }
@@ -625,23 +632,24 @@ int Decode::getLength(Mat& srcImg)
 	return length;
 }
 
-unsigned char* Decode::decode(Mat& srcImg, int& length, int& type)
+unsigned char* Decode::decode(Mat& dst, int& length, int& type)
 {
-	Mat dst;
-	findQranchor(srcImg, dst);
+	//Mat dst;
+	//findQranchor(srcImg, dst);
 
 
 	type = getType(dst);
 	unsigned char* tmp = NULL;
 	length = getLength(dst);
+	int change_flag = false;
 	int tmplen;
-	if (type == SINGLE || type == END || type == NORMAL)
+	if (type == SINGLE || type == END)
 	{
 		tmplen = length;
 		tmp = new unsigned char[tmplen];
 
 	}
-	else if (type == BEGIN)
+	else if (type == BEGIN||type==NORMAL)
 	{
 		tmplen = MAXSIZE;
 		tmp = new unsigned char[tmplen];
@@ -688,9 +696,9 @@ unsigned char* Decode::decode(Mat& srcImg, int& length, int& type)
 
 	//Block B解码完成
 
-	//Block C解码开始
+	//Block C解码开始//block3，4，5解码
 
-	for (int i = 16; i < 96; i++)//遍历行
+	/*for (int i = 16; i < 96; i++)//遍历行
 	{
 		for (int part = 0; part < 10; part++)//计算字节
 		{
@@ -705,8 +713,71 @@ unsigned char* Decode::decode(Mat& srcImg, int& length, int& type)
 			if (index >= tmplen) return tmp;
 			tmp[index++] = (unsigned char)code;
 		}
+	}*/
+
+	for (int i = 16; i < 80; i++)//遍历行
+	{//block3
+		for (int part = 0; part < 8; part++)//计算字节
+		{
+			int code = 0;
+			int k = 1;
+			for (int j = 0; j < 8; j++)
+			{
+				Vec3b pix = dst.at<Vec3b>(i, j + part * 8);
+				code += k * getBit(pix);
+				k *= 2;
+			}
+			if (index >= tmplen) return tmp;
+			tmp[index++] = (unsigned char)code;
+		}
 	}
 
+	for (int i = 80; i < 96; i++)//遍历行
+	{//block4
+		for (int part = 0; part < 8; part++)//计算字节
+		{
+			int code = 0;
+			int k = 1;
+			for (int j = 0; j < 8; j++)
+			{
+				Vec3b pix = dst.at<Vec3b>(i, 16 + j + part * 8);
+				code += k * getBit(pix);
+				k *= 2;
+			}
+			if (index >= tmplen) return tmp;
+			tmp[index++] = (unsigned char)code;
+		}
+	}
+
+	for (int i = 16; i < 80; i++)//遍历行
+	{//block5
+		for (int part = 8; part < 10; part++)//计算字节
+		{
+			int code = 0;
+			int k = 1;
+			for (int j = 0; j < 8; j++)
+			{
+				Vec3b pix = dst.at<Vec3b>(i, 16+j + part * 8);
+				code += k * getBit(pix);
+				k *= 2;
+			}
+			if (index >= tmplen) return tmp;
+			tmp[index++] = (unsigned char)code;
+		}
+	}
 	return tmp;
 
+}
+
+int Decode::getFlag(Mat& srcImg)
+{
+	int flagCode = 0;//code=3
+	int k = 1;//K为二进制运算的系数
+	for (int i = 2; i < 4; i++)
+	{
+		Vec3b pix = srcImg.at<Vec3b>(16, i);
+		flagCode += k * getBit(pix);
+		k *= 2;
+	}
+	return flagCode;
 }
