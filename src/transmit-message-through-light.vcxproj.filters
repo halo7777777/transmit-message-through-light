@@ -15,28 +15,10 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="FileConvert.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="main.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="parse.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="parse_test.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="ZipTool.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="zlibtest.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="opencv_img_array\cvtest.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="jz.cpp">
+    <ClCompile Include="FileConvert.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="code.cpp">
@@ -45,7 +27,7 @@
     <ClCompile Include="Decode.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="codetest.cpp">
+    <ClCompile Include="ZipTool.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
@@ -53,22 +35,13 @@
     <ClInclude Include="FileConvert.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="parse.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="ZipTool.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="opencv_img_array\img_code.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="opencv_img_array\img_decode.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="code.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Decode.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="ZipTool.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

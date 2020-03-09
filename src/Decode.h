@@ -9,7 +9,7 @@
 #define NORMAL 1
 #define END 2
 #define SINGLE 3
-#define MAXSIZE 1054
+#define MAXSIZE 1022
 
 using namespace std;
 using namespace cv;
@@ -20,10 +20,10 @@ private:
 	const int COL;
 
 
-	void rotate(Mat& srcImg, Mat& dst);//弃用
+	void rotate(Mat& srcImg, Mat& dst);//寮冪敤
 
-	Point Center_cal(vector<vector<Point> > contours, int i);//弃用
-	void locate(Mat& src, Mat& dst);//弃用
+	Point Center_cal(vector<vector<Point> > contours, int i);//寮冪敤
+	void locate(Mat& src, Mat& dst);//寮冪敤
 	bool QrRate(float rate);
 	bool QrColorRateX(cv::Mat& image, int flag);
 	bool QrColorRateY(cv::Mat& image, int flag);
@@ -42,7 +42,9 @@ public:
 	Decode(int size = 96) :ROW(size), COL(size) {}
 	unsigned char* decode(Mat& srcImg, int& length, int& type);
 	int findQranchor(Mat& srcImg, Mat& dst);
+
 	int  getBit(Vec3b pix);//输入坐标点，获取 01 
 	int getType(Mat& srcImg);//获取二维码类型 //传入图片需要96x96
 	int getLength(Mat& srcImg);//传入图片需要96x96
+	int getFlag(Mat& srcImg);
 };
