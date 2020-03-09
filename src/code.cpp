@@ -1,5 +1,4 @@
 ﻿#include"code.h"
-
 namespace Code
 {
     constexpr unsigned long BytesPerFrame = 1022;
@@ -36,25 +35,38 @@ namespace Code
         Single = 3,
 
     };
-    void Main(unsigned char* info, unsigned long len, const char* savePath, const char* outputFormat) // 字符串信息，长度，保存路径，保存格式
+    void Main(unsigned char* info, unsigned long len, const char* savePath, const char* outputFormat, int tag) // 字符串信息，长度，保存路径，保存格式
     {
         Mat output;
         char fileName[128];
         int count = 0;
+        int count_test = 0;
         if (len <= BytesPerFrame)
         {
             unsigned char BUF[BytesPerFrame + 5];
             memcpy(BUF, info, sizeof(unsigned char) * len);
             for (int i = len; i <= BytesPerFrame; ++i)
                 BUF[i] = rand() % 256;
-            output = amplify(CodeFrame(FrameType::Single, BUF, len, 0));
+            if (tag == 0)
+            {
+                output = amplify(transform(CodeFrame(FrameType::Single, BUF, len, 0)), 0);
+                sprintf_s(fileName, "%s\\test%05d.%s", savePath, count_test++, outputFormat);
+                imwrite(fileName, output);
+            }
+            output = amplify(CodeFrame(FrameType::Single, BUF, len, 0), 1);
             sprintf_s(fileName, "%s\\%05d.%s", savePath, count++, outputFormat);
             imwrite(fileName, output);
         }
         else
         {
             int PicNum = 0;
-            output = amplify(CodeFrame(FrameType::Start, info, len, PicNum++));
+            if (tag == 0)
+            {
+                output = amplify(transform(CodeFrame(FrameType::Start, info, len, PicNum++)),0);
+                sprintf_s(fileName, "%s\\test%05d.%s", savePath, count_test++, outputFormat);
+                imwrite(fileName, output);
+            }
+            output = amplify(CodeFrame(FrameType::Start, info, len, PicNum++),1);
             sprintf_s(fileName, "%s\\%05d.%s", savePath, count++, outputFormat);
             imwrite(fileName, output);
             do
@@ -62,17 +74,33 @@ namespace Code
                 len -= BytesPerFrame;
                 info += BytesPerFrame;
                 if (len > BytesPerFrame)
-                    output = amplify(CodeFrame(FrameType::Normal, info, BytesPerFrame, PicNum++));
+                {
+                    if (tag == 0)
+                    {
+                        output = amplify(transform(CodeFrame(FrameType::Normal, info, BytesPerFrame, PicNum++)),0);
+                        sprintf_s(fileName, "%s\\test%05d.%s", savePath, count_test++, outputFormat);
+                        imwrite(fileName, output);
+                    }
+                    output = amplify(CodeFrame(FrameType::Normal, info, BytesPerFrame, PicNum++),1);
+                    sprintf_s(fileName, "%s\\%05d.%s", savePath, count++, outputFormat);
+                    imwrite(fileName, output);
+                }
                 else
                 {
                     unsigned char BUF[BytesPerFrame + 5];
                     memcpy(BUF, info, sizeof(unsigned char) * len);
                     for (int i = len; i <= BytesPerFrame; ++i)
                         BUF[i] = rand() % 256;
-                    output = amplify(CodeFrame(FrameType::End, BUF, len, PicNum++));
+                    if (tag == 0)
+                    {
+                        output = amplify(transform(CodeFrame(FrameType::End, BUF, len, PicNum++)),0);
+                        sprintf_s(fileName, "%s\\test%05d.%s", savePath, count_test++, outputFormat);
+                        imwrite(fileName, output);
+                    }
+                    output = amplify(CodeFrame(FrameType::End, BUF, len, PicNum++), 1);
+                    sprintf_s(fileName, "%s\\%05d.%s", savePath, count++, outputFormat);
+                    imwrite(fileName, output);
                 }
-                sprintf_s(fileName, "%s\\%05d.%s", savePath, count++, outputFormat);
-                imwrite(fileName, output);
                 /*              测试是否能用于定位
                                 int i = 0;
                                 Mat dst = imread(fileName);
@@ -89,10 +117,12 @@ namespace Code
         }
         return;
     }
-    Mat amplify(const Mat& src)
+    Mat amplify(const Mat& src, int tag)
     {
         Mat output;
-        constexpr int FrameOutputSize = FrameSize * FrameOutputRate;
+        int FrameOutputSize = FrameSize * FrameOutputRate;
+        if (tag == 0)
+            FrameOutputSize = (FrameSize - 2 * SafeAreaWidth) * FrameOutputRate;
         output = Mat(FrameOutputSize, FrameOutputSize, CV_8UC3);
         for (int i = 0; i < FrameOutputSize; ++i)
         {
@@ -109,7 +139,6 @@ namespace Code
         if (frameType == FrameType::Start || frameType == FrameType::Normal)
             //3/1/14:30决定不存最大长度，最大长度由最后一张长度+BytesPerFrame*张数计算      
             tailLen = BytesPerFrame;
-        BulidSafeArea(codeMat);       //绘制安全带
         BulidQrPoint(codeMat);        //绘制定位码       
         BulidFrameFlag(codeMat, frameType, tailLen);
         BulidPicNum(codeMat, PicNum);
@@ -124,21 +153,6 @@ namespace Code
         }
 
         return codeMat;
-    }
-    void BulidSafeArea(Mat& mat)  //创建安全码带
-    {
-        constexpr int pos[4][2][2] =
-        {
-            {{0,FrameSize},{0,SafeAreaWidth}},
-            {{0,FrameSize},{FrameSize - SafeAreaWidth,FrameSize}},
-            {{0, SafeAreaWidth },{0,FrameSize}},
-            {{FrameSize - SafeAreaWidth,FrameSize},{0,FrameSize}}
-        };
-        for (int k = 0; k < 4; ++k)
-            for (int i = pos[k][0][0]; i < pos[k][0][1]; ++i)
-                for (int j = pos[k][1][0]; j < pos[k][1][1]; ++j)
-                    mat.at<Vec3b>(i, j) = pixel[White];
-        return;
     }
     void BulidQrPoint(Mat& mat)
     {
@@ -227,5 +241,20 @@ namespace Code
     {
         mat.at<Vec3b>(BPatternSize, SafeAreaWidth + 2) = pixel[(PicNum & 1) ? 0 : 7];
         mat.at<Vec3b>(BPatternSize, SafeAreaWidth + 3) = pixel[(PicNum & 1) ? 7 : 0];
+    }
+    Mat transform(const Mat& mat)
+    {
+        Mat output;
+        constexpr int FrameOutputSize = FrameSize - 2 * SafeAreaWidth;
+        output = Mat(FrameOutputSize, FrameOutputSize, CV_8UC3);
+        for (int i = SafeAreaWidth; i < FrameOutputSize+SafeAreaWidth; ++i)
+        {
+            for (int j = SafeAreaWidth; j < FrameOutputSize+SafeAreaWidth; ++j)
+            {
+       //         printf("%d %d\n",i,j);
+                output.at<Vec3b>(i-SafeAreaWidth, j-SafeAreaWidth) = mat.at<Vec3b>(i , j);
+            }
+        }
+        return output;
     }
 }
