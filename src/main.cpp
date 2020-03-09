@@ -4,6 +4,7 @@
 #include<cstdio>
 #include<cstdlib>
 #include"code.h"
+#include<algorithm>
 #include"qtdecode.h"
 using namespace std;
 using namespace cv;
@@ -48,26 +49,20 @@ int main()
 	}
 	else if (function == 3)
 	{
-		FileConvert file;
-		FILE* fp1, * fp2;
-		unsigned long num1 = 0, num2 = 0;
-		fopen_s(&fp1, "in.bin", "rb");
-		fopen_s(&fp2, "out.bin", "rb");
-		num1 = file.GetFileSize(fp1);
-		num2 = file.GetFileSize(fp1);
-		unsigned char* dst1 = new unsigned char[num1];
-		unsigned char* dst2 = new unsigned char[num2];
-		fread(dst1, sizeof(unsigned char), num1, fp1);
-		fread(dst2, sizeof(unsigned char), num1, fp2);
-		unsigned long totalnum = 1, wrongnum = 0, m = 0;
-		while (totalnum <= (num1 + 1))
+		char inname[] = "in.bin";
+		char outname[] = "out.bin";
+		unsigned long inSize, outSize= 0;
+		unsigned char* inByte = converter.FileToByte(inname, &inSize);
+		unsigned char* outByte = converter.FileToByte(outname, &outSize);
+		unsigned long totalnum = 1, wrongnum = 0;
+		int cnt = 0;
+		while (cnt++ < min(inSize, outSize))
 		{
 			totalnum++;
-			if (dst1[m] != dst2[m]) wrongnum++;
-			m++;
+			if (inByte[cnt]!= outByte[cnt]) wrongnum++;
 		}
 		double n;
-		n = 1 - (wrongnum / totalnum);
+		n = ((1.0*wrongnum) / totalnum);
 		cout << "bit error rate is " << n << endl;
 		return 0;
 	}
