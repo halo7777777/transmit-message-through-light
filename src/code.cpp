@@ -1,4 +1,4 @@
-#include"code.h"
+﻿#include"code.h"
 
 namespace Code
 {
@@ -225,7 +225,7 @@ namespace Code
     }
     void BulidPicNum(Mat& mat, int PicNum)
     {
-        mat.at<Vec3b>(BPatternSize, SafeAreaWidth + 2) = pixel[(PicNum & 1) ? 7 : 0];
+        mat.at<Vec3b>(BPatternSize, SafeAreaWidth + 2) = pixel[(PicNum & 1) ? 0 : 7];
         mat.at<Vec3b>(BPatternSize, SafeAreaWidth + 3) = pixel[(PicNum & 1) ? 7 : 0];
     }
 }
