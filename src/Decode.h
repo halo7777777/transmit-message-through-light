@@ -1,4 +1,5 @@
 #pragma once
+#pragma once
 #include<opencv2/opencv.hpp>
 
 #include "opencv2/imgproc.hpp"
@@ -18,11 +19,11 @@ private:
 	const int ROW;
 	const int COL;
 
-	
-	void rotate(Mat& srcImg, Mat& dst);//ÆúÓÃ
-	
-	Point Center_cal(vector<vector<Point> > contours, int i);//ÆúÓÃ
-	void locate(Mat& src, Mat& dst);//ÆúÓÃ
+
+	void rotate(Mat& srcImg, Mat& dst);//å¯®å†ªæ•¤
+
+	Point Center_cal(vector<vector<Point> > contours, int i);//å¯®å†ªæ•¤
+	void locate(Mat& src, Mat& dst);//å¯®å†ªæ•¤
 	bool QrRate(float rate);
 	bool QrColorRateX(cv::Mat& image, int flag);
 	bool QrColorRateY(cv::Mat& image, int flag);
@@ -34,15 +35,16 @@ private:
 	bool isCorner(Mat& image);
 	void anchorSequence(vector<Point2f>& anchor_center);
 	//
-	
+
 
 
 public:
-	Decode(int size=96) :ROW(size), COL(size){}
+	Decode(int size = 96) :ROW(size), COL(size) {}
 	unsigned char* decode(Mat& srcImg, int& length, int& type);
 	int findQranchor(Mat& srcImg, Mat& dst);
-	int  getBit(Vec3b pix);//ÊäÈë×ø±êµã£¬»ñÈ¡ 01 
-	int getType(Mat& srcImg);//»ñÈ¡¶şÎ¬ÂëÀàĞÍ //´«ÈëÍ¼Æ¬ĞèÒª96x96
-	int getLength(Mat& srcImg);//´«ÈëÍ¼Æ¬ĞèÒª96x96
+
+	int  getBit(Vec3b pix);//è¾“å…¥åæ ‡ç‚¹ï¼Œè·å– 01 
+	int getType(Mat& srcImg);//è·å–äºŒç»´ç ç±»å‹ //ä¼ å…¥å›¾ç‰‡éœ€è¦96x96
+	int getLength(Mat& srcImg);//ä¼ å…¥å›¾ç‰‡éœ€è¦96x96
 	int getFlag(Mat& srcImg);
 };

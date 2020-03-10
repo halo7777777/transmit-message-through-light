@@ -4,8 +4,10 @@
 #include<cstdio>
 #include<cstdlib>
 #include"code.h"
+
 #include<algorithm>
 #include"qtdecode.h"
+
 using namespace std;
 using namespace cv;
 
@@ -13,7 +15,7 @@ int main()
 {
 	int fps = 10;
 	FileConvert converter;
-	
+
 	string path = "imageSrc\\";
 	int function;
 	cout << "function one:encode file to video" << endl;

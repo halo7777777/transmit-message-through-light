@@ -1,10 +1,11 @@
+#pragma once
 #include "Decode.h"
 
 Point Decode::Center_cal(vector<vector<Point> > contours, int i)
 {
 	int centerx = 0, centery = 0, n = static_cast<int>(contours[i].size());
-	//ÔÚÌáÈ¡µÄĞ¡Õı·½ĞÎµÄ±ß½çÉÏÃ¿¸ôÖÜ³¤¸öÏñËØÌáÈ¡Ò»¸öµãµÄ×ø±ê£¬
-	//ÇóËùÌáÈ¡ËÄ¸öµãµÄÆ½¾ù×ø±ê£¨¼´ÎªĞ¡Õı·½ĞÎµÄ´óÖÂÖĞĞÄ£©
+	//åœ¨æå–çš„å°æ­£æ–¹å½¢çš„è¾¹ç•Œä¸Šæ¯éš”å‘¨é•¿ä¸ªåƒç´ æå–ä¸€ä¸ªç‚¹çš„åæ ‡ï¼Œ
+	//æ±‚æ‰€æå–å››ä¸ªç‚¹çš„å¹³å‡åæ ‡ï¼ˆå³ä¸ºå°æ­£æ–¹å½¢çš„å¤§è‡´ä¸­å¿ƒï¼‰
 	centerx = (contours[i][n / 4].x + contours[i][n * 2 / 4].x + contours[i][3 * n / 4].x + contours[i][n - 1].x) / 4;
 	centery = (contours[i][n / 4].y + contours[i][n * 2 / 4].y + contours[i][3 * n / 4].y + contours[i][n - 1].y) / 4;
 	Point point1 = Point(centerx, centery);
@@ -26,7 +27,7 @@ void Decode::locate(Mat& src, Mat& dst)
 	Scalar color = Scalar(1, 1, 255);
 
 	Canny(src_gray, drawingAllContours, 100, 255);
-	//½ÓÏÂÀ´¿ªÊ¼ÕÒ¶¨Î»½Ç
+	//æ¥ä¸‹æ¥å¼€å§‹æ‰¾å®šä½è§’
 
 	findContours(drawingAllContours, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_NONE);
 	for (int i = 0; i < contours.size(); i++)
@@ -57,24 +58,24 @@ void Decode::locate(Mat& src, Mat& dst)
 	int area_side = cvRound(sqrt(double(area)));
 	for (int i = 0; i < contours2.size(); i++)
 	{
-		//»­³öÈı¸ö¶¨Î»½ÇµÄÖĞĞÄÁ¬Ïß
+		//ç”»å‡ºä¸‰ä¸ªå®šä½è§’çš„ä¸­å¿ƒè¿çº¿
 		line(drawing2, point[i % contours2.size()], point[(i + 1) % contours2.size()], color, area_side / 2, 8);
 	}
-	//	½ÓÏÂÀ´Òª¿ò³öÕâÕû¸ö¶şÎ¬Âë
+	//	æ¥ä¸‹æ¥è¦æ¡†å‡ºè¿™æ•´ä¸ªäºŒç»´ç 
 	Mat gray_all, threshold_output_all;
 	vector<vector<Point> > contours_all;
 	vector<Vec4i> hierarchy_all;
 	cvtColor(drawing2, gray_all, CV_BGR2GRAY);
 	threshold(gray_all, threshold_output_all, 45, 255, THRESH_BINARY);
 	findContours(threshold_output_all, contours_all, hierarchy_all, RETR_EXTERNAL, CHAIN_APPROX_NONE,
-		Point(0, 0));//RETR_EXTERNAL±íÊ¾Ö»Ñ°ÕÒ×îÍâ²ãÂÖÀª
+		Point(0, 0));//RETR_EXTERNALè¡¨ç¤ºåªå¯»æ‰¾æœ€å¤–å±‚è½®å»“
 	Point2f fourPoint2f[4];
-	//Çó×îĞ¡°üÎ§¾ØĞÎ
+	//æ±‚æœ€å°åŒ…å›´çŸ©å½¢
 	RotatedRect rectPoint = minAreaRect(contours_all[0]);
 
 	Rect myRect = boundingRect(contours_all[0]);
 
-	//½«rectPoint±äÁ¿ÖĞ´æ´¢µÄ×ø±êÖµ·Åµ½ fourPointµÄÊı×éÖĞ
+	//å°†rectPointå˜é‡ä¸­å­˜å‚¨çš„åæ ‡å€¼æ”¾åˆ° fourPointçš„æ•°ç»„ä¸­
 	rectPoint.points(fourPoint2f);
 
 	Mat resultImage = Mat(src_all, myRect);
@@ -83,12 +84,12 @@ void Decode::locate(Mat& src, Mat& dst)
 
 	cvtColor(resizeImage, dst, COLOR_BGR2GRAY);
 	threshold(dst, dst, 150, 255, THRESH_BINARY | THRESH_OTSU);
-	cvtColor(dst, dst, COLOR_GRAY2BGR);//ÑÕÉ«»Ö¸´
+	cvtColor(dst, dst, COLOR_GRAY2BGR);//é¢œè‰²æ¢å¤
 	//imshow("test", dst);
 	//waitKey(0);
 }
 
-void Decode::rotate(Mat& srcImg, Mat& dst)//´«ÈëÔ´Í¼Ïñ£¬Ä¿±ê¾ØÕó,µÃµ½¾ÀÆ«ºóµÄÍ¼Ïñ´æÔÚdst
+void Decode::rotate(Mat& srcImg, Mat& dst)//ä¼ å…¥æºå›¾åƒï¼Œç›®æ ‡çŸ©é˜µ,å¾—åˆ°çº ååçš„å›¾åƒå­˜åœ¨dst
 {
 	Mat newImg = srcImg;
 	QRCodeDetector qrDetector;
@@ -99,27 +100,28 @@ void Decode::rotate(Mat& srcImg, Mat& dst)//´«ÈëÔ´Í¼Ïñ£¬Ä¿±ê¾ØÕó,µÃµ½¾ÀÆ«ºóµÄÍ¼Ï
 		cout << "noting to find";
 		return;
 	}
-	Mat warpPerspective_mat(3, 3, CV_32FC1);//3£¬3Ğı×ª¾ØÕó
-	Mat warpPerspective_dst = Mat::zeros(ROW, COL, newImg.type());//Ğı×ªºóµÄÄ¿±ê
+	Mat warpPerspective_mat(3, 3, CV_32FC1);//3ï¼Œ3æ—‹è½¬çŸ©é˜µ
+	Mat warpPerspective_dst = Mat::zeros(ROW, COL, newImg.type());//æ—‹è½¬åçš„ç›®æ ‡
 
-	vector<Point2f> dstRect;//Ä¿µÄµã
+	vector<Point2f> dstRect;//ç›®çš„ç‚¹
 	dstRect.push_back(Point2f(0, 0));
 	dstRect.push_back(Point2f(ROW - 1, 0));
 	dstRect.push_back(Point2f(ROW - 1, COL - 1));
 	dstRect.push_back(Point2f(0, COL - 1));
-	warpPerspective_mat = getPerspectiveTransform(list, dstRect);//Éú³ÉĞı×ª¾ØÕó
-	warpPerspective(newImg, warpPerspective_dst, warpPerspective_mat, warpPerspective_dst.size());//½øĞĞÍ¸ÊÓ±ä»»
+
+	warpPerspective_mat = getPerspectiveTransform(list, dstRect);//ç”Ÿæˆæ—‹è½¬çŸ©é˜µ
+	warpPerspective(newImg, warpPerspective_dst, warpPerspective_mat, warpPerspective_dst.size());//è¿›è¡Œé€è§†å˜æ¢
 
 	dst = warpPerspective_dst;
 	cvtColor(warpPerspective_dst, dst, COLOR_BGR2GRAY);
 	threshold(dst, dst, 150, 255, THRESH_BINARY | THRESH_OTSU);
-	cvtColor(dst, dst, COLOR_GRAY2BGR);//ÑÕÉ«»Ö¸´
+	cvtColor(dst, dst, COLOR_GRAY2BGR);//é¢œè‰²æ¢å¤
 	//srcImg = dst;
 }
 
 bool Decode::QrRate(float rate)
 {
-	//´ó¸Å±ÈÀı ²»ÄÜÌ«ÑÏ¸ñ
+	//å¤§æ¦‚æ¯”ä¾‹ ä¸èƒ½å¤ªä¸¥æ ¼
 	return rate > 0.3 && rate < 1.9;
 }
 
@@ -164,7 +166,7 @@ bool Decode::QrColorRateX(cv::Mat& image, int flag)
 	if (vValueCount.size() < 5 || vValueCount.size() > 7)
 		return false;
 
-	//ºáÏòºÚ°×±ÈÀı1:1:3:1:1
+	//æ¨ªå‘é»‘ç™½æ¯”ä¾‹1:1:3:1:1
 	int index = -1;
 	int maxCount = -1;
 	for (int i = 0; i < vValueCount.size(); i++)
@@ -184,13 +186,13 @@ bool Decode::QrColorRateX(cv::Mat& image, int flag)
 		}
 	}
 
-	//×ó±ß ÓÒ±ß ¶¼ÓĞÁ½¸öÖµ£¬²ÅĞĞ
+	//å·¦è¾¹ å³è¾¹ éƒ½æœ‰ä¸¤ä¸ªå€¼ï¼Œæ‰è¡Œ
 	if (index < 2)
 		return false;
 	if ((vValueCount.size() - index) < 3)
 		return false;
 
-	//ºÚ°×±ÈÀı1:1:3:1:1
+	//é»‘ç™½æ¯”ä¾‹1:1:3:1:1
 	float rate = ((float)maxCount) / 3.00;
 
 	if (!QrRate(vValueCount[index - 2] / rate))
@@ -246,7 +248,7 @@ bool Decode::QrColorRateY(cv::Mat& image, int flag)
 	if (vValueCount.size() < 5 || vValueCount.size() > 7)
 		return false;
 
-	//ºáÏòºÚ°×±ÈÀı1:1:3:1:1
+	//æ¨ªå‘é»‘ç™½æ¯”ä¾‹1:1:3:1:1
 	int index = -1;
 	int maxCount = -1;
 	for (int i = 0; i < vValueCount.size(); i++)
@@ -266,13 +268,13 @@ bool Decode::QrColorRateY(cv::Mat& image, int flag)
 		}
 	}
 
-	//×ó±ß ÓÒ±ß ¶¼ÓĞÁ½¸öÖµ£¬²ÅĞĞ
+	//å·¦è¾¹ å³è¾¹ éƒ½æœ‰ä¸¤ä¸ªå€¼ï¼Œæ‰è¡Œ
 	if (index < 2)
 		return false;
 	if ((vValueCount.size() - index) < 3)
 		return false;
 
-	//ºÚ°×±ÈÀı1:1:3:1:1
+	//é»‘ç™½æ¯”ä¾‹1:1:3:1:1
 	float rate = ((float)maxCount) / 3.00;
 
 	if (!QrRate(vValueCount[index - 2] / rate))
@@ -344,14 +346,14 @@ Mat Decode::CropImage(Mat& img, RotatedRect& rotatedRect)
 
 bool Decode::QrPoint(vector<Point>& contour, Mat& img, int i)
 {
-	//×îĞ¡´óĞ¡ÏŞ¶¨
+	//æœ€å°å¤§å°é™å®š
 	RotatedRect rotated_rect = minAreaRect(contour);
 	if (rotated_rect.size.height < 40 || rotated_rect.size.width < 40)
 		return false;
-	//½«¶şÎ¬Âë´ÓÕû¸öÍ¼ÉÏ¿Ù³öÀ´
+	//å°†äºŒç»´ç ä»æ•´ä¸ªå›¾ä¸ŠæŠ å‡ºæ¥
 	cv::Mat cropImg = CropImage(img, rotated_rect);
 	int flag = i++;
-	//ºáÏòºÚ°×±ÈÀı1:1:3:1:1
+	//æ¨ªå‘é»‘ç™½æ¯”ä¾‹1:1:3:1:1
 	bool result = IsQrColorRate(cropImg, flag);
 	return result;
 }
@@ -423,10 +425,10 @@ bool Decode::isCorner(Mat& image)
 		{
 			Rect rect = boundingRect(Mat(contours[i]));
 			rectangle(image, rect, Scalar(0, 0, 255), 2);
-			/******************ÓÉÍ¼¿ÉÖª×îÀïÃæµÄ¾ØĞÎ¿í¶ÈÕ¼×Ü¿íµÄ3/7***********************/
-			if (rect.width < mask.cols * 2 / 7)      //2/7ÊÇÎªÁË·ÀÖ¹Ò»Ğ©Î¢Ğ¡µÄ·ÂÉä
+			/******************ç”±å›¾å¯çŸ¥æœ€é‡Œé¢çš„çŸ©å½¢å®½åº¦å æ€»å®½çš„3/7***********************/
+			if (rect.width < mask.cols * 2 / 7)      //2/7æ˜¯ä¸ºäº†é˜²æ­¢ä¸€äº›å¾®å°çš„ä»¿å°„
 				continue;
-			if (Ratete(dstGray(rect)) > 0.75)       //0.75ÊÇÎÒ²âÊÔ¼¸ÕÅÍ¼Æ¬µÄ¾­ÑéÖµ ¿É¸ù¾İÇé¿öÉèÖÃ(²âÊÔÊıÁ¿²¢²»¶à)
+			if (Ratete(dstGray(rect)) > 0.75)       //0.75æ˜¯æˆ‘æµ‹è¯•å‡ å¼ å›¾ç‰‡çš„ç»éªŒå€¼ å¯æ ¹æ®æƒ…å†µè®¾ç½®(æµ‹è¯•æ•°é‡å¹¶ä¸å¤š)
 			{
 				rectangle(mask, rect, Scalar(0, 0, 255), 2);
 				return true;
@@ -488,11 +490,11 @@ int Decode::findQranchor(Mat& srcImg, Mat& dst)
 			k = hierarchy[k][2];
 			ic++;
 		}
-		//ÓĞÁ½¸ö×ÓÂÖÀª²ÅÊÇ¶şÎ¬ÂëµÄ¶¥µã
+		//æœ‰ä¸¤ä¸ªå­è½®å»“æ‰æ˜¯äºŒç»´ç çš„é¡¶ç‚¹
 		if (ic >= 2)
 		{
 			bool isQr = QrPoint(contours[parentIdx], srcGray, parentIdx);
-			//±£´æÕÒµ½µÄËÄ¸öºÚÉ«¶¨Î»½Ç
+			//ä¿å­˜æ‰¾åˆ°çš„å››ä¸ªé»‘è‰²å®šä½è§’
 			if (isQr)
 				contour2.push_back(contours[parentIdx]);
 			parentIdx = -1;
@@ -569,7 +571,7 @@ int Decode::findQranchor(Mat& srcImg, Mat& dst)
 		warpPerspective(srcGray, output, warp_mat, srcImg.size());
 		resize(output, output, Size(96, 96));
 		//threshold(output, output, 150, 255, THRESH_BINARY | THRESH_OTSU);
-		//cvtColor(output, output, COLOR_GRAY2BGR);//ÑÕÉ«»Ö¸´
+		//cvtColor(output, output, COLOR_GRAY2BGR);//é¢œè‰²æ¢å¤
 		dst = output;
 		//imwrite("final.png", output);
 		return 1;
@@ -588,18 +590,18 @@ int Decode::getBit(Vec3b pix)
 	c = pix[2];
 	if (a == 0 && b == 0 && c == 0)
 	{
-		return 0;//ºÚ
+		return 0;//é»‘
 	}
 	else if (a == 255 && b == 255 && c == 255)
 	{
-		return 1;//°×
+		return 1;//ç™½
 	}
 }
 
 int Decode::getType(Mat& srcImg)
 {
 	int typecode = 0;//code=3
-	int k = 1;//KÎª¶ş½øÖÆÔËËãµÄÏµÊı
+	int k = 1;//Kä¸ºäºŒè¿›åˆ¶è¿ç®—çš„ç³»æ•°
 	for (int i = 0; i < 2; i++)
 	{
 		Vec3b pix = srcImg.at<Vec3b>(16, i);
@@ -616,14 +618,14 @@ int Decode::getType(Mat& srcImg)
 		return END;
 	case 3:
 		return SINGLE;
-	}//Ğ¡¶Ë·¨×Ö½Ú
+	}//å°ç«¯æ³•å­—èŠ‚
 }
 
 int Decode::getLength(Mat& srcImg)
 {
 	int length = 0;
 	int k = 1;
-	for (int i = 0; i < 12; i++)//µÚ16ĞĞ[3,15]ÓÃÀ´´æ³¤¶È
+	for (int i = 0; i < 12; i++)//ç¬¬16è¡Œ[3,15]ç”¨æ¥å­˜é•¿åº¦
 	{
 		Vec3b pix = srcImg.at<Vec3b>(16, 4 + i);
 		length += k * getBit(pix);
@@ -631,6 +633,7 @@ int Decode::getLength(Mat& srcImg)
 	}
 	return length;
 }
+
 
 unsigned char* Decode::decode(Mat& dst, int& length, int& type)
 {
@@ -643,7 +646,9 @@ unsigned char* Decode::decode(Mat& dst, int& length, int& type)
 	length = getLength(dst);
 	int change_flag = false;
 	int tmplen;
+
 	if (type == SINGLE || type == END)
+
 	{
 		tmplen = length;
 		tmp = new unsigned char[tmplen];
@@ -656,10 +661,10 @@ unsigned char* Decode::decode(Mat& dst, int& length, int& type)
 	}
 	for (int i = 0; i < tmplen; i++) { tmp[i] = 0; }
 	//block A
-	int index = 0;//Ôİ´æÊı×éµÄÏÂ±ê
-	for (int i = 17; i < 80; i++)//±éÀúĞĞ
+	int index = 0;//æš‚å­˜æ•°ç»„çš„ä¸‹æ ‡
+	for (int i = 17; i < 80; i++)//éå†è¡Œ
 	{
-		for (int part = 0; part < 2; part++)//¼ÆËã×Ö½Ú
+		for (int part = 0; part < 2; part++)//è®¡ç®—å­—èŠ‚
 		{
 			int code = 0;
 			int k = 1;
@@ -673,13 +678,13 @@ unsigned char* Decode::decode(Mat& dst, int& length, int& type)
 			tmp[index++] = (unsigned char)code;
 		}
 	}
-	//block A½âÂëÍê³É
+	//block Aè§£ç å®Œæˆ
 
-	//Block B½âÂë
+	//Block Bè§£ç 
 
-	for (int i = 0; i < 16; i++)//±éÀúĞĞ
+	for (int i = 0; i < 16; i++)//éå†è¡Œ
 	{
-		for (int part = 0; part < 8; part++)//¼ÆËã×Ö½Ú
+		for (int part = 0; part < 8; part++)//è®¡ç®—å­—èŠ‚
 		{
 			int code = 0;
 			int k = 1;
@@ -694,13 +699,13 @@ unsigned char* Decode::decode(Mat& dst, int& length, int& type)
 		}
 	}
 
-	//Block B½âÂëÍê³É
+	//Block Bè§£ç å®Œæˆ
 
-	//Block C½âÂë¿ªÊ¼//block3£¬4£¬5½âÂë
+	//Block Cè§£ç å¼€å§‹//block3ï¼Œ4ï¼Œ5è§£ç 
 
-	/*for (int i = 16; i < 96; i++)//±éÀúĞĞ
+	/*for (int i = 16; i < 96; i++)//éå†è¡Œ
 	{
-		for (int part = 0; part < 10; part++)//¼ÆËã×Ö½Ú
+		for (int part = 0; part < 10; part++)//è®¡ç®—å­—èŠ‚
 		{
 			int code = 0;
 			int k = 1;
@@ -715,9 +720,9 @@ unsigned char* Decode::decode(Mat& dst, int& length, int& type)
 		}
 	}*/
 
-	for (int i = 16; i < 80; i++)//±éÀúĞĞ
+	for (int i = 16; i < 80; i++)//éå†è¡Œ
 	{//block3
-		for (int part = 0; part < 8; part++)//¼ÆËã×Ö½Ú
+		for (int part = 0; part < 8; part++)//è®¡ç®—å­—èŠ‚
 		{
 			int code = 0;
 			int k = 1;
@@ -732,9 +737,9 @@ unsigned char* Decode::decode(Mat& dst, int& length, int& type)
 		}
 	}
 
-	for (int i = 80; i < 96; i++)//±éÀúĞĞ
+	for (int i = 80; i < 96; i++)//éå†è¡Œ
 	{//block4
-		for (int part = 0; part < 8; part++)//¼ÆËã×Ö½Ú
+		for (int part = 0; part < 8; part++)//è®¡ç®—å­—èŠ‚
 		{
 			int code = 0;
 			int k = 1;
@@ -749,9 +754,9 @@ unsigned char* Decode::decode(Mat& dst, int& length, int& type)
 		}
 	}
 
-	for (int i = 16; i < 80; i++)//±éÀúĞĞ
+	for (int i = 16; i < 80; i++)//éå†è¡Œ
 	{//block5
-		for (int part = 8; part < 10; part++)//¼ÆËã×Ö½Ú
+		for (int part = 8; part < 10; part++)//è®¡ç®—å­—èŠ‚
 		{
 			int code = 0;
 			int k = 1;
@@ -772,7 +777,7 @@ unsigned char* Decode::decode(Mat& dst, int& length, int& type)
 int Decode::getFlag(Mat& srcImg)
 {
 	int flagCode = 0;//code=3
-	int k = 1;//KÎª¶ş½øÖÆÔËËãµÄÏµÊı
+	int k = 1;//Kä¸ºäºŒè¿›åˆ¶è¿ç®—çš„ç³»æ•°
 	for (int i = 2; i < 4; i++)
 	{
 		Vec3b pix = srcImg.at<Vec3b>(16, i);
