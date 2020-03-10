@@ -35,7 +35,7 @@ int main()
 		converter.GenerateRandFile(filename, size);
 		bytes = converter.FileToByte(filename, &size);//读取文件生成的Byte数组
 		
-		Code::Main(bytes, size, "imageSrc\\", "png");
+		Code::Main(bytes, size, "imageSrc\\", "png",1);
 		converter.PicTransToVideo(fps);
 		//int fps = 10;//测试用每秒10帧试试
 		
@@ -51,8 +51,8 @@ int main()
 	}
 	else if (function == 3)
 	{
-		char inname[] = "in.bin";
-		char outname[] = "out.bin";
+		char inname[] = "out.bin";
+		char outname[] = "in.bin";
 		unsigned long inSize, outSize= 0;
 		unsigned char* inByte = converter.FileToByte(inname, &inSize);
 		unsigned char* outByte = converter.FileToByte(outname, &outSize);

@@ -644,7 +644,7 @@ unsigned char* Decode::decode(Mat& dst, int& length, int& type)
 	type = getType(dst);
 	unsigned char* tmp = NULL;
 	length = getLength(dst);
-	int change_flag = false;
+	//int change_flag = false;
 	int tmplen;
 
 	if (type == SINGLE || type == END)
@@ -719,16 +719,16 @@ unsigned char* Decode::decode(Mat& dst, int& length, int& type)
 			tmp[index++] = (unsigned char)code;
 		}
 	}*/
-
-	for (int i = 16; i < 80; i++)//遍历行
-	{//block3
+	//block3
+	for (int i = 16; i < 96; i++)//遍历行
+	{
 		for (int part = 0; part < 8; part++)//计算字节
 		{
 			int code = 0;
 			int k = 1;
 			for (int j = 0; j < 8; j++)
 			{
-				Vec3b pix = dst.at<Vec3b>(i, j + part * 8);
+				Vec3b pix = dst.at<Vec3b>(i, 16+j + part * 8);
 				code += k * getBit(pix);
 				k *= 2;
 			}
@@ -737,22 +737,6 @@ unsigned char* Decode::decode(Mat& dst, int& length, int& type)
 		}
 	}
 
-	for (int i = 80; i < 96; i++)//遍历行
-	{//block4
-		for (int part = 0; part < 8; part++)//计算字节
-		{
-			int code = 0;
-			int k = 1;
-			for (int j = 0; j < 8; j++)
-			{
-				Vec3b pix = dst.at<Vec3b>(i, 16 + j + part * 8);
-				code += k * getBit(pix);
-				k *= 2;
-			}
-			if (index >= tmplen) return tmp;
-			tmp[index++] = (unsigned char)code;
-		}
-	}
 
 	for (int i = 16; i < 80; i++)//遍历行
 	{//block5

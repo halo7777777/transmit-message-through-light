@@ -57,7 +57,7 @@ void qtdecode::mydecode()
 		sprintf_s(fileName, "imageTmp\\%05d.png", i);
 		img = imread(fileName);
 		currentFlag = dec.getFlag(img);
-		if (currentFlag != originFlag)
+		if (currentFlag==2&&originFlag==1|| currentFlag == 1 && originFlag == 2)
 		{
 			fileNames.push_back(fileName);
 			originFlag = currentFlag;
