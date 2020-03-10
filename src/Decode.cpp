@@ -475,6 +475,8 @@ int Decode::findQranchor(Mat& srcImg, Mat& dst)
 	vector<Vec4i> hierarchy;
 	cvtColor(srcImg, srcGray, COLOR_BGR2GRAY);
 	threshold(srcGray, srcGray, 188, 255, THRESH_BINARY | THRESH_OTSU);
+	//Mat edge;
+	//Canny(srcGray, edge, 100, 255);
 	findContours(srcGray, contours, hierarchy, RETR_TREE, CHAIN_APPROX_SIMPLE);
 	int ic = 0;
 	int parentIdx = -1;
@@ -500,6 +502,7 @@ int Decode::findQranchor(Mat& srcImg, Mat& dst)
 			parentIdx = -1;
 		}
 	}
+
 	vector<Point2f> qr_center, src_center;
 	for (int i = 0; i < contour2.size(); i++)
 	{
@@ -517,7 +520,7 @@ int Decode::findQranchor(Mat& srcImg, Mat& dst)
 			char tmp_name[20];
 			sprintf_s(tmp_name, "cor%d.png", i);
 			//imwrite(tmp_name, image);
-			if (1)//isCorner(image))
+			if (isCorner(image))
 			{
 				Point2f points[4];
 				rect.points(points);
