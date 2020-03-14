@@ -475,6 +475,8 @@ int Decode::findQranchor(Mat& srcImg, Mat& dst)
 	vector<Vec4i> hierarchy;
 	cvtColor(srcImg, srcGray, COLOR_BGR2GRAY);
 	threshold(srcGray, srcGray, 188, 255, THRESH_BINARY | THRESH_OTSU);
+	//Mat edge;
+	//Canny(srcGray, edge, 100, 255);
 	findContours(srcGray, contours, hierarchy, RETR_TREE, CHAIN_APPROX_SIMPLE);
 	int ic = 0;
 	int parentIdx = -1;
@@ -500,6 +502,7 @@ int Decode::findQranchor(Mat& srcImg, Mat& dst)
 			parentIdx = -1;
 		}
 	}
+
 	vector<Point2f> qr_center, src_center;
 	for (int i = 0; i < contour2.size(); i++)
 	{
@@ -517,7 +520,7 @@ int Decode::findQranchor(Mat& srcImg, Mat& dst)
 			char tmp_name[20];
 			sprintf_s(tmp_name, "cor%d.png", i);
 			//imwrite(tmp_name, image);
-			if (1)//isCorner(image))
+			if (isCorner(image))
 			{
 				Point2f points[4];
 				rect.points(points);
@@ -644,7 +647,7 @@ unsigned char* Decode::decode(Mat& dst, int& length, int& type)
 	type = getType(dst);
 	unsigned char* tmp = NULL;
 	length = getLength(dst);
-	int change_flag = false;
+	//int change_flag = false;
 	int tmplen;
 
 	if (type == SINGLE || type == END)
@@ -719,16 +722,16 @@ unsigned char* Decode::decode(Mat& dst, int& length, int& type)
 			tmp[index++] = (unsigned char)code;
 		}
 	}*/
-
-	for (int i = 16; i < 80; i++)//遍历行
-	{//block3
+	//block3
+	for (int i = 16; i < 96; i++)//遍历行
+	{
 		for (int part = 0; part < 8; part++)//计算字节
 		{
 			int code = 0;
 			int k = 1;
 			for (int j = 0; j < 8; j++)
 			{
-				Vec3b pix = dst.at<Vec3b>(i, j + part * 8);
+				Vec3b pix = dst.at<Vec3b>(i, 16+j + part * 8);
 				code += k * getBit(pix);
 				k *= 2;
 			}
@@ -737,22 +740,6 @@ unsigned char* Decode::decode(Mat& dst, int& length, int& type)
 		}
 	}
 
-	for (int i = 80; i < 96; i++)//遍历行
-	{//block4
-		for (int part = 0; part < 8; part++)//计算字节
-		{
-			int code = 0;
-			int k = 1;
-			for (int j = 0; j < 8; j++)
-			{
-				Vec3b pix = dst.at<Vec3b>(i, 16 + j + part * 8);
-				code += k * getBit(pix);
-				k *= 2;
-			}
-			if (index >= tmplen) return tmp;
-			tmp[index++] = (unsigned char)code;
-		}
-	}
 
 	for (int i = 16; i < 80; i++)//遍历行
 	{//block5
