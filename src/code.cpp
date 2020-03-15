@@ -2,7 +2,7 @@
 namespace Code
 {
 
-    constexpr unsigned long BytesPerFrame = 1022;
+    constexpr unsigned long BytesPerFrame = 2044;
     constexpr int FrameSize = 100;
     constexpr int FrameOutputRate = 10;
     constexpr int SafeAreaWidth = 2;
@@ -11,12 +11,12 @@ namespace Code
     constexpr int areanum = 5;
     const Vec3b pixel[8] =
     {
-        Vec3b(0,0,0),Vec3b(0,0,255),Vec3b(0,255,0),Vec3b(0,255,255),
-        Vec3b(255,0,0),Vec3b(255,0,255),Vec3b(255,255,0),Vec3b(255,255,255)
+        Vec3b(0,0,0),Vec3b(0,0,255),Vec3b(0,255,0),Vec3b(255,0,0),
+        Vec3b(0,255,255),Vec3b(255,0,255),Vec3b(255,255,0),Vec3b(255,255,255)
     };
-    const unsigned long len_max[areanum] = { 126,128,512,128,128 };
+    const unsigned long len_max[areanum] = { 252,256,1024,256,256 };
     const int areapos[areanum][2][2] =
-    {//[2][2],绗竴缁村害浠ｈ〃楂樺锛岀浜岀淮搴︿唬琛ㄥ乏涓婅鍧愭爣
+    {//[2][2],第一维度代表高宽，第二维度代表左上角坐标
         {{63,16},{BPatternSize + 1,SafeAreaWidth}},
         {{16,64},{SafeAreaWidth,BPatternSize}},
         {{64,64},{BPatternSize,BPatternSize}},
@@ -36,7 +36,7 @@ namespace Code
         Single = 3,
 
     };
-    void Main(unsigned char* info, unsigned long len, const char* savePath, const char* outputFormat, int tag) // 瀛楃涓蹭俊鎭紝闀垮害锛屼繚瀛樿矾寰勶紝淇濆瓨鏍煎紡
+    void Main(unsigned char* info, unsigned long len, const char* savePath, const char* outputFormat, int tag) // 字符串信息，长度，保存路径，保存格式
     {
         Mat output;
         char fileName[128];
@@ -102,7 +102,7 @@ namespace Code
                     sprintf_s(fileName, "%s\\%05d.%s", savePath, count++, outputFormat);
                     imwrite(fileName, output);
                 }
-                /*              娴嬭瘯鏄惁鑳界敤浜庡畾浣?
+                /*              测试是否能用于定使
                                 int i = 0;
                                 Mat dst = imread(fileName);
                                 QRCodeDetector qrDetector;
@@ -136,14 +136,14 @@ namespace Code
     }
     Mat CodeFrame(FrameType frameType, unsigned char* info, unsigned long tailLen, int PicNum)
     {
-        Mat codeMat = Mat(FrameSize, FrameSize, CV_8UC3, Vec3b(255, 255, 255));     //搴曠墖涓虹櫧鑹?
+        Mat codeMat = Mat(FrameSize, FrameSize, CV_8UC3, Vec3b(255, 255, 255));     //底片为白艿
         if (frameType == FrameType::Start || frameType == FrameType::Normal)
-            //3/1/14:30鍐冲畾涓嶅瓨鏈?澶ч暱搴︼紝鏈?澶ч暱搴︾敱鏈?鍚庝竴寮犻暱搴?+BytesPerFrame*寮犳暟璁＄畻      
+            //3/1/14:30决定不存朿大长度，朿大长度由朿后一张长庿+BytesPerFrame*张数计算      
             tailLen = BytesPerFrame;
-        BulidQrPoint(codeMat);        //缁樺埗瀹氫綅鐮?       
+        BulidQrPoint(codeMat);        //绘制定位砿       
         BulidFrameFlag(codeMat, frameType, tailLen);
         BulidPicNum(codeMat, PicNum);
-        if (tailLen != BytesPerFrame)           //缂栫爜鏃舵暣寮犲浘閮借缂栫爜锛屾湭纭畾鐨勬槸闅忔満鏁?
+        if (tailLen != BytesPerFrame)           //编码时整张图都要编码，未确定的是随机敿
             tailLen = BytesPerFrame;
         for (int i = 0; i < areanum && tailLen > 0; ++i)
         {
@@ -157,7 +157,7 @@ namespace Code
     }
     void BulidQrPoint(Mat& mat)
     {
-        //缁樺埗澶т簩缁寸爜璇嗗埆鐐?
+        //绘制大二维码识别炿
         constexpr int pointPos[4][2] =
         {
             {0,0},
@@ -181,7 +181,7 @@ namespace Code
             for (int j = 0; j < BPatternSize; ++j)
                 for (int k = 0; k < BPatternSize; ++k)
                     mat.at<Vec3b>(pointPos[i][0] + j, pointPos[i][1] + k) =
-                    vec3bBig[(int)max(fabs(j - 8.5), fabs(k - 8.5))];       //鎵撳嵃鍥炲瓧
+                    vec3bBig[(int)max(fabs(j - 8.5), fabs(k - 8.5))];       //打印回字
     }
     void BulidInfoRect(Mat& mat, unsigned char* info, unsigned long len, int areaID)
     {
@@ -190,21 +190,21 @@ namespace Code
         for (int i = 0; i < areapos[areaID][0][0]; ++i)
         {
             uint32_t outputCode = 0;
-            for (int j = 0; j < areapos[areaID][0][1] / 8; ++j)    // 1 char = 8 瀛楄妭
+            for (int j = 0; j < areapos[areaID][0][1] / 8; ++j)    // 1 char = 8 bits
             {
-                outputCode |= *pos++;
-                /*for (int k = 0; k < 3; ++k)
+                //outputCode |= *pos++;
+                for (int k = 0; k < 2; ++k)
                 {
                     outputCode <<= 8;
                     if (pos != end)
                         outputCode |= *pos++;
-                }*/
+                }
                 for (int k = areapos[areaID][1][1]; k < areapos[areaID][1][1] + 8; ++k)
                 {
-                    //mat.at<Vec3b>(i+areapos[areaID][1][0], j*8+k) = pixel[outputCode&7];
-                    //outputCode >>= 3;
-                    mat.at<Vec3b>(i + areapos[areaID][1][0], j * 8 + k) = pixel[(outputCode & 1) ? 7 : 0];
-                    outputCode >>= 1;
+                    mat.at<Vec3b>(i+areapos[areaID][1][0], j*8+k) = pixel[outputCode&3];
+                    outputCode >>= 2;
+                  //  mat.at<Vec3b>(i + areapos[areaID][1][0], j * 8 + k) = pixel[(outputCode & 1) ? 7 : 0];
+                  //  outputCode >>= 1;
                 }
                 if (pos == end) break;
             }
