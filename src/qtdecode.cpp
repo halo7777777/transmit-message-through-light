@@ -41,7 +41,7 @@ void qtdecode::mydecode()
 		}
 	}
 	
-	foundindex = 49;
+	//foundindex = 49;
 	//遍历每张图片，检测同步码是否发生变化
 		//将有需要的名字传入传入array中，获取二维码张树
 	vector<string> fileNames;

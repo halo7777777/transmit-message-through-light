@@ -1,4 +1,4 @@
-锘�#include"code.h"
+#include"code.h"
 namespace Code
 {
 
