@@ -30,6 +30,9 @@
     <ClCompile Include="ZipTool.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="qtdecode.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="FileConvert.h">
@@ -42,6 +45,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="ZipTool.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="qtdecode.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
