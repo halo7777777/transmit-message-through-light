@@ -467,6 +467,7 @@ int Decode::findQranchor(Mat& srcImg, Mat& dst)
 	if (!srcImg.data)
 		return -1;
 	Mat srcGray;
+	Mat src = srcImg.clone();
 	int cols = srcImg.cols;
 	int rows = srcImg.rows;
 	vector<vector<Point>> qrPoint;
@@ -551,12 +552,7 @@ int Decode::findQranchor(Mat& srcImg, Mat& dst)
 			src_center.push_back(qr_center[i]);
 		for (int i = 0; i < src_center.size(); ++i)
 			line(srcImg, src_center[i], src_center[(i + 1) % 4], Scalar(0, 255, 255), 5);
-		//imwrite("centers.png", srcImg);
 		vector<Point2f> origin_center;
-		//origin_center.push_back(Point2f(cols * 73. / 1280, rows * 647. / 720));
-		//origin_center.push_back(Point2f(cols * 73. / 1280, rows * 73. / 720));
-		//origin_center.push_back(Point2f(cols * 1207. / 1280, rows * 73. / 720));
-		//origin_center.push_back(Point2f(cols * 1207. / 1280, rows * 647. / 720));
 		double c = 7;
 		double r = 89;
 		int cons = 96;
@@ -565,13 +561,9 @@ int Decode::findQranchor(Mat& srcImg, Mat& dst)
 		origin_center.push_back(Point2f(cols * r / cons, rows * c / cons));
 		origin_center.push_back(Point2f(cols * r / cons, rows * r / cons));
 
-		//origin_center.push_back(Point2f(c,r));
-		//origin_center.push_back(Point2f(c,c));
-		//origin_center.push_back(Point2f(r,c));
-		//origin_center.push_back(Point2f(r,r));
-
 		Mat warp_mat = getPerspectiveTransform(src_center, origin_center);
-		warpPerspective(srcGray, output, warp_mat, srcImg.size());
+		//warpPerspective(srcGray, output, warp_mat, srcImg.size());
+		warpPerspective(src, output, warp_mat, srcImg.size());
 		resize(output, output, Size(96, 96));
 		//threshold(output, output, 150, 255, THRESH_BINARY | THRESH_OTSU);
 		//cvtColor(output, output, COLOR_GRAY2BGR);//颜色恢复
@@ -591,6 +583,10 @@ int Decode::getBit(Vec3b pix)
 	a = pix[0];
 	b = pix[1];
 	c = pix[2];
+
+	a = (a < 128) ? 0 : 255;
+	b = (b < 128) ? 0 : 255;
+	c = (c < 128) ? 0 : 255;
 	if (a == 0 && b == 0 && c == 0)
 	{
 		return 0;//黑
@@ -598,6 +594,40 @@ int Decode::getBit(Vec3b pix)
 	else if (a == 255 && b == 255 && c == 255)
 	{
 		return 1;//白
+	}
+}
+
+void Decode::getColorBits(Vec3b pix,vector<int> &bits)
+{
+	int b = pix[0];
+	int g = pix[1];
+	int r = pix[2];
+
+
+	r = (r < 128) ? 0 : 255;
+	g = (g < 128) ? 0 : 255;
+	b = (b < 128) ? 0 : 255;
+
+
+	if (r == 0 && g == 0 && b == 0)
+	{
+		bits.push_back(0);
+		bits.push_back(0);
+	}
+	if (r == 0 && g == 0 && b == 255)
+	{
+		bits.push_back(0);
+		bits.push_back(1);
+	}
+	if (r == 0 && g == 255 && b == 0)
+	{
+		bits.push_back(1);
+		bits.push_back(0);
+	}
+	if (r == 255 && g == 0 && b == 0)
+	{
+		bits.push_back(1);
+		bits.push_back(1);
 	}
 }
 
@@ -665,7 +695,7 @@ unsigned char* Decode::decode(Mat& dst, int& length, int& type)
 	for (int i = 0; i < tmplen; i++) { tmp[i] = 0; }
 	//block A
 	int index = 0;//暂存数组的下标
-	for (int i = 17; i < 80; i++)//遍历行
+/*	for (int i = 17; i < 80; i++)//遍历行
 	{
 		for (int part = 0; part < 2; part++)//计算字节
 		{
@@ -680,12 +710,35 @@ unsigned char* Decode::decode(Mat& dst, int& length, int& type)
 			if (index >= tmplen) return tmp;
 			tmp[index++] = (unsigned char)code;
 		}
+	}*/
+
+	for (int i = 17; i < 80; i++)
+	{
+		for (int part = 0; part < 4; part++)
+		{
+			vector<int> bits;
+			int code = 0;
+			int k = 1;
+			for (int j = 0; j < 4; j++)
+			{
+				Vec3b pix = dst.at<Vec3b>(i, j + part * 4);
+				getColorBits(pix, bits);
+			}
+			for (int j = 0; j < 8; j++)
+			{
+				code += k * bits[j];
+				k *= 2;
+			}
+			if (index >= tmplen) return tmp;
+			tmp[index++] = (unsigned char)code;
+		}
 	}
+
 	//block A解码完成
 
 	//Block B解码
 
-	for (int i = 0; i < 16; i++)//遍历行
+	/*for (int i = 0; i < 16; i++)//遍历行
 	{
 		for (int part = 0; part < 8; part++)//计算字节
 		{
@@ -695,6 +748,29 @@ unsigned char* Decode::decode(Mat& dst, int& length, int& type)
 			{
 				Vec3b pix = dst.at<Vec3b>(i, 16 + j + part * 8);
 				code += k * getBit(pix);
+				k *= 2;
+			}
+			if (index >= tmplen) return tmp;
+			tmp[index++] = (unsigned char)code;
+		}
+	}
+	*/
+
+	for (int i = 0; i < 16; i++)//遍历行
+	{
+		for (int part = 0; part < 16; part++)//计算字节
+		{
+			int code = 0;
+			int k = 1;
+			vector<int> bits;
+			for (int j = 0; j < 4; j++)
+			{
+				Vec3b pix = dst.at<Vec3b>(i, 16 + j + part * 4);
+				getColorBits(pix, bits);
+			}
+			for (int j = 0; j < 8; j++)
+			{
+				code += k * bits[j];
 				k *= 2;
 			}
 			if (index >= tmplen) return tmp;
@@ -723,7 +799,7 @@ unsigned char* Decode::decode(Mat& dst, int& length, int& type)
 		}
 	}*/
 	//block3
-	for (int i = 16; i < 96; i++)//遍历行
+	/*for (int i = 16; i < 96; i++)//遍历行
 	{
 		for (int part = 0; part < 8; part++)//计算字节
 		{
@@ -738,10 +814,37 @@ unsigned char* Decode::decode(Mat& dst, int& length, int& type)
 			if (index >= tmplen) return tmp;
 			tmp[index++] = (unsigned char)code;
 		}
+	}*/
+
+	for (int i = 16; i < 96; i++)//遍历行
+	{
+		for (int part = 0; part < 16; part++)//计算字节
+		{
+			int code = 0;
+			int k = 1;
+			vector<int> bits;
+			for (int j = 0; j < 4; j++)
+			{
+				Vec3b pix = dst.at<Vec3b>(i, 16+j + part * 4);
+				getColorBits(pix, bits);
+			}
+			
+			for (int j = 0; j < 8; j++)
+			{
+				code += k * bits[j];
+				k *= 2;
+			}
+
+			if (index >= tmplen) return tmp;
+			tmp[index++] = (unsigned char)code;
+		}
 	}
 
 
-	for (int i = 16; i < 80; i++)//遍历行
+
+
+
+	/*for (int i = 16; i < 80; i++)//遍历行
 	{//block5
 		for (int part = 8; part < 10; part++)//计算字节
 		{
@@ -756,7 +859,32 @@ unsigned char* Decode::decode(Mat& dst, int& length, int& type)
 			if (index >= tmplen) return tmp;
 			tmp[index++] = (unsigned char)code;
 		}
+	}*/
+
+	for (int i = 16; i < 80; i++)//遍历行
+	{//block5
+		for (int part = 16; part < 20; part++)//计算字节
+		{
+			int code = 0;
+			int k = 1;
+			vector<int> bits;
+			for (int j = 0; j < 4; j++)
+			{
+				Vec3b pix = dst.at<Vec3b>(i, 16+j + part * 4);
+				getColorBits(pix, bits);
+			}
+
+			for (int j = 0; j < 8; j++)
+			{
+				code += k * bits[j];
+				k *= 2;
+			}
+
+			if (index >= tmplen) return tmp;
+			tmp[index++] = (unsigned char)code;
+		}
 	}
+
 	return tmp;
 
 }

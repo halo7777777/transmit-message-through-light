@@ -82,7 +82,7 @@ void qtdecode::mydecode()
 	unsigned char* output = NULL;
 	int type;
 	unsigned char* tmp = dec.decode(img, length, type);//为了获取最后一张的长度
-	int total_length = (numOfPic - 1) * 1022 + length;
+	int total_length = (numOfPic - 1) * MAXSIZE + length;
 	//Mat image;//源图片
 	int i, j;
 	char outfilename[] = "out.bin";
@@ -100,11 +100,9 @@ void qtdecode::mydecode()
 	{
 		//length为总文件的长度
 		int tmplen = MAXSIZE;
-		output = new unsigned char[total_length];//用于储存数据的数组
-		//memcpy(output + indexptr, tmp, tmplen);//复制到最终的数组里
-		//indexptr += tmplen;
+		output = new unsigned char[total_length];
 		delete[]tmp;
-	}//不可能是end和normal了
+	}
 
 	count = 0;
 	int tmplen;
@@ -112,25 +110,17 @@ void qtdecode::mydecode()
 	while (true)
 	{
 		if (count == numOfPic) break;
-		//sprintf_s(fileName, "imageOutput\\%05d.png", count++);
 		img = imread(fileNames[count++]);//读入图像；
-		//if (count > numOfPic||img.data==NULL) break;
-		//dec.findQranchor(image, dst);
-		/*for (i = 0; i <= 96; i++)
-		{
-			for (j = 0; j <= 96; j++)
-			{
-				output
-				fwrite;
-			}
-		}*/
 		unsigned char* tmp = dec.decode(img, tmplen, type);
-		if (tmplen > 1022) tmplen = 1022;
+		if (tmplen > MAXSIZE) tmplen = MAXSIZE;
 		cout << "dealing with " << fileNames [count-1]<< " "<<tmplen << endl;
 		memcpy(output + indexptr, tmp, tmplen);//复制到最终的数组里
+
+		cout << endl;
 		indexptr += tmplen;
 		delete[]tmp;
 	}
+
 
 	converter.ByteToFile(output, outfilename, total_length);
 

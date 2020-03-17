@@ -51,12 +51,25 @@ int main()
 	}
 	else if (function == 3)
 	{
-		char inname[] = "out.bin";
-		char outname[] = "in.bin";
+		char inname[] = "in.bin";
+		char outname[] = "out.bin";
 		unsigned long inSize, outSize= 0;
 		unsigned char* inByte = converter.FileToByte(inname, &inSize);
 		unsigned char* outByte = converter.FileToByte(outname, &outSize);
 		unsigned long totalnum = 1, wrongnum = 0;
+
+		for (int i = 0; i < 10; i++)
+		{
+			printf_s("%d ", inByte[i]);
+		}
+
+		cout << endl;
+
+		for (int i = 0; i < 10; i++)
+		{
+			printf_s("%d ", outByte[i]);
+		}
+
 		int cnt = 0;
 		while (cnt++ < min(inSize, outSize))
 		{

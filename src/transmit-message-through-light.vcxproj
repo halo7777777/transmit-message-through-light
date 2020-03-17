@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="code.cpp" />
+    <ClCompile Include="cvtest.cpp" />
     <ClCompile Include="Decode.cpp" />
     <ClCompile Include="FileConvert.cpp" />
     <ClCompile Include="main.cpp" />

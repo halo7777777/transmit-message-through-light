@@ -3,14 +3,14 @@
 #include<opencv2/opencv.hpp>
 
 #include "opencv2/imgproc.hpp"
-
+#include<vector>
 #include<opencv2/imgproc/types_c.h>
 #define BEGIN 0
 #define NORMAL 1
 #define END 2
 #define SINGLE 3
-#define MAXSIZE 1022
-
+//#define MAXSIZE 1022
+#define MAXSIZE 2044
 using namespace std;
 using namespace cv;
 class Decode
@@ -47,4 +47,6 @@ public:
 	int getType(Mat& srcImg);//获取二维码类型 //传入图片需要96x96
 	int getLength(Mat& srcImg);//传入图片需要96x96
 	int getFlag(Mat& srcImg);
+	void getColorBits(Vec3b pix,vector<int> &bits);
 };
+

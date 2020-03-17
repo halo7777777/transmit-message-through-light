@@ -1,21 +1,36 @@
-#include<vector>
-#include <opencv2/opencv.hpp>
-//#include "opencv2/highgui/highgui.hpp" 
-//#include "opencv2/core/core.hpp"
-using namespace std;
-using namespace cv;
-#include"img_decode.h"
-#include"img_code.h"
-
-int main()
-{
-    char readPath[] = "读入地址\\图片";    //传入图片的地址
-
-    vector<vector<uchar> > array;
-    array = img_decode(readPath);
-
-    char writePath[] = "目标地址";        //输出图片的保存位置
-    img_code(array, writePath);
-
-    return 0;
-}
+//#include<opencv2/opencv.hpp>
+//#include"Decode.h"
+//using namespace std;
+//int main()
+//{
+//	Mat src;
+//	Mat dst;
+//	src = imread("src.png");
+//	dst = imread("dst.png");
+//	Mat out;
+//	bitwise_xor(src, dst, out);
+//	imwrite("out.png", out);
+//	return 0;
+//	Decode dec;
+//	//dec.findQranchor(src, dst);
+//	//imshow("test", dst);
+//	//waitKey(0);
+//	int typecode = 0;//code=3
+//	int k = 1;//K为二进制运算的系数
+//
+//	vector<int> bits;
+//
+//	for (int i = 0; i < 16; i++)
+//	{
+//		Vec3b pix = src.at<Vec3b>(17, i);
+//		dec.getColorBits(pix, bits);
+//	}
+//	
+//	cout << "-------------------------------------" << endl;
+//	for (int i = 0; i < bits.size(); i+=2)
+//	{
+//		cout << bits[i] << bits[i + 1] << endl;
+//	}
+//
+//
+//}
