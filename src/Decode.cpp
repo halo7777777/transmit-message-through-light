@@ -474,7 +474,13 @@ int Decode::findQranchor(Mat& srcImg, Mat& dst)
 	vector<vector<Point>> contours;
 	vector<Vec4i> hierarchy;
 	cvtColor(srcImg, srcGray, COLOR_BGR2GRAY);
-	threshold(srcGray, srcGray, 188, 255, THRESH_BINARY | THRESH_OTSU);
+	//threshold(srcGray, srcGray, 188, 255, THRESH_BINARY | THRESH_OTSU);
+	Mat otsu_gray;
+	threshold(srcGray, otsu_gray, 150, 255, THRESH_BINARY);
+	threshold(srcGray, srcGray, 150, 255, THRESH_BINARY);
+	//namedWindow("test", 0);
+	//imshow("test", srcGray);
+	//waitKey(0);
 	//Mat edge;
 	//Canny(srcGray, edge, 100, 255);
 	findContours(srcGray, contours, hierarchy, RETR_TREE, CHAIN_APPROX_SIMPLE);
@@ -520,7 +526,7 @@ int Decode::findQranchor(Mat& srcImg, Mat& dst)
 			char tmp_name[20];
 			sprintf_s(tmp_name, "cor%d.png", i);
 			//imwrite(tmp_name, image);
-			if (isCorner(image))
+			if (true)//isCorner(image))
 			{
 				Point2f points[4];
 				rect.points(points);
@@ -571,7 +577,11 @@ int Decode::findQranchor(Mat& srcImg, Mat& dst)
 		//origin_center.push_back(Point2f(r,r));
 
 		Mat warp_mat = getPerspectiveTransform(src_center, origin_center);
-		warpPerspective(srcGray, output, warp_mat, srcImg.size());
+
+
+
+
+		warpPerspective(otsu_gray, output, warp_mat, srcImg.size());
 		resize(output, output, Size(96, 96));
 		//threshold(output, output, 150, 255, THRESH_BINARY | THRESH_OTSU);
 		//cvtColor(output, output, COLOR_GRAY2BGR);//颜色恢复

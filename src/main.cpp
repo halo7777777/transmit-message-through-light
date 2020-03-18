@@ -56,12 +56,26 @@ int main()
 		unsigned long inSize, outSize= 0;
 		unsigned char* inByte = converter.FileToByte(inname, &inSize);
 		unsigned char* outByte = converter.FileToByte(outname, &outSize);
-		unsigned long totalnum = 1, wrongnum = 0;
+		unsigned long totalnum = 0, wrongnum = 0;
 		int cnt = 0;
+		int in, out;
 		while (cnt++ < min(inSize, outSize))
 		{
-			totalnum++;
-			if (inByte[cnt]!= outByte[cnt]) wrongnum++;
+			in = inByte[cnt];
+			out = outByte[cnt];
+			totalnum += 8;
+			if (inByte[cnt] != outByte[cnt])
+			{
+				for (int i = 0; i < 8; i++)
+				{
+					if ((in & 1) != (out & 1))
+					{
+						wrongnum++;
+					}
+					in >>= 1;
+					out >>= 1;
+				}
+			}
 		}
 		double n;
 		n = ((1.0*wrongnum) / totalnum);
