@@ -1,4 +1,4 @@
-class qtdecode
+class Qrdecode
 {
 public:
 	static void mydecode();

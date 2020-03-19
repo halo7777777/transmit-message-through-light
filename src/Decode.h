@@ -20,10 +20,7 @@ private:
 	const int COL;
 
 
-	void rotate(Mat& srcImg, Mat& dst);//寮冪敤
-
-	Point Center_cal(vector<vector<Point> > contours, int i);//寮冪敤
-	void locate(Mat& src, Mat& dst);//寮冪敤
+	Point Center_cal(vector<vector<Point> > contours, int i);
 	bool QrRate(float rate);
 	bool QrColorRateX(cv::Mat& image, int flag);
 	bool QrColorRateY(cv::Mat& image, int flag);
@@ -34,8 +31,6 @@ private:
 	double Ratete(Mat count);
 	bool isCorner(Mat& image);
 	void anchorSequence(vector<Point2f>& anchor_center);
-	//
-
 
 
 public:
@@ -47,4 +42,5 @@ public:
 	int getType(Mat& srcImg);//获取二维码类型 //传入图片需要96x96
 	int getLength(Mat& srcImg);//传入图片需要96x96
 	int getFlag(Mat& srcImg);
+	double getRate(Mat& srcImg);
 };

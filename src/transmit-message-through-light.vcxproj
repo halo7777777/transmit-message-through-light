@@ -20,17 +20,18 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="code.cpp" />
+    <ClCompile Include="cvtest.cpp" />
     <ClCompile Include="Decode.cpp" />
     <ClCompile Include="FileConvert.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="qtdecode.cpp" />
+    <ClCompile Include="Qrdecode.cpp" />
     <ClCompile Include="ZipTool.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="code.h" />
     <ClInclude Include="Decode.h" />
     <ClInclude Include="FileConvert.h" />
-    <ClInclude Include="qtdecode.h" />
+    <ClInclude Include="Qrdecode.h" />
     <ClInclude Include="ZipTool.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

@@ -6,7 +6,7 @@
 #include"code.h"
 
 #include<algorithm>
-#include"qtdecode.h"
+#include"Qrdecode.h"
 
 using namespace std;
 using namespace cv;
@@ -46,7 +46,7 @@ int main()
 
 	else if (function == 2)
 	{
-		qtdecode mydecode;
+		Qrdecode mydecode;
 		mydecode.mydecode();
 		function = 3;
 	}

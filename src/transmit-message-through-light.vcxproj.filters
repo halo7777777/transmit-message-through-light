@@ -30,7 +30,10 @@
     <ClCompile Include="ZipTool.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="qtdecode.cpp">
+    <ClCompile Include="cvtest.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Qrdecode.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
@@ -47,7 +50,7 @@
     <ClInclude Include="ZipTool.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="qtdecode.h">
+    <ClInclude Include="Qrdecode.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

@@ -1,11 +1,12 @@
-#include "qtdecode.h"
+#include "Qrdecode.h"
 #include"Decode.h"
 #include"FileConvert.h"
 #include<iostream>
 using namespace std;
 using namespace cv;
 
-void qtdecode::mydecode()
+
+void Qrdecode::mydecode()
 {
 	char fileName[128];
 	char tmpName[128];
@@ -21,7 +22,7 @@ void qtdecode::mydecode()
 	int count = 1;
 	Mat img;
 	Mat dst;
-	int foundindex = 1;
+	int foundindex = 116;
 	while (true)
 	{
 		sprintf_s(fileName, "imageOutput\\%05d.png", count++);
@@ -41,7 +42,7 @@ void qtdecode::mydecode()
 		}
 	}
 	
-	//foundindex = 49;
+	//foundindex = 87;
 	//遍历每张图片，检测同步码是否发生变化
 		//将有需要的名字传入传入array中，获取二维码张树
 	vector<string> fileNames;
@@ -61,8 +62,11 @@ void qtdecode::mydecode()
 		currentFlag = dec.getFlag(img);
 		if (currentFlag==2&&originFlag==1|| currentFlag == 1 && originFlag == 2)
 		{
-			fileNames.push_back(fileName);
-			originFlag = currentFlag;
+			if (dec.getRate(img) - 0.51 < 0)
+			{
+				fileNames.push_back(fileName);
+				originFlag = currentFlag;
+			}
 		}
 		else
 		{
@@ -114,16 +118,6 @@ void qtdecode::mydecode()
 		if (count == numOfPic) break;
 		//sprintf_s(fileName, "imageOutput\\%05d.png", count++);
 		img = imread(fileNames[count++]);//读入图像；
-		//if (count > numOfPic||img.data==NULL) break;
-		//dec.findQranchor(image, dst);
-		/*for (i = 0; i <= 96; i++)
-		{
-			for (j = 0; j <= 96; j++)
-			{
-				output
-				fwrite;
-			}
-		}*/
 		unsigned char* tmp = dec.decode(img, tmplen, type);
 		if (tmplen > 1022) tmplen = 1022;
 		cout << "dealing with " << fileNames [count-1]<< " "<<tmplen << endl;
