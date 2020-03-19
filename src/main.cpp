@@ -35,10 +35,10 @@ int main()
 		converter.GenerateRandFile(filename, size);
 		bytes = converter.FileToByte(filename, &size);//读取文件生成的Byte数组
 		
-		Code::Main(bytes, size, "imageSrc\\", "png",1);
-		converter.PicTransToVideo(fps);
-		//int fps = 10;//测试用每秒10帧试试
+		Code::Main(bytes, size, "imageSrc\\", "png", 1, 1);  // tag：0裁剪图，1标准图， flag: 0黑白图， 1四色图
 		
+		converter.PicTransToVideo(fps);
+
 		return 0;
 	}
 	//

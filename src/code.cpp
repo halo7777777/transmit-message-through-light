@@ -2,7 +2,7 @@
 namespace Code
 {
 
-    constexpr unsigned long BytesPerFrame = 1018;    //每帧图的字节数
+    unsigned long BytesPerFrame = 1018;    //每帧图的字节数
     constexpr int FrameSize = 100;
     constexpr int FrameOutputRate = 10;
     constexpr int SafeAreaWidth = 2;
@@ -13,7 +13,7 @@ namespace Code
         Vec3b(0,0,0),Vec3b(0,0,255),Vec3b(0,255,0),Vec3b(255,0,0),
         Vec3b(0,255,255),Vec3b(255,0,255),Vec3b(255,255,0),Vec3b(255,255,255)
     };
-    const unsigned long len_max[areanum] = { 124,128,512,128,126 };
+    unsigned long len_max[areanum] = { 124,128,512,128,126 };
     const int areapos[areanum][2][2] =
     {//[2][2],第一维度代表高宽，第二维度代表左上角坐标
         {{62,16},{BPatternSize + 1,SafeAreaWidth}},
@@ -35,25 +35,35 @@ namespace Code
         Single = 3,
 
     };
-    void Main(unsigned char* info, unsigned long len, const char* savePath, const char* outputFormat, int tag) // 字符串信息，长度，保存路径，保存格式
+    void Main(unsigned char* info, unsigned long len, const char* savePath, const char* outputFormat, int tag, int flag) // 字符串信息，长度，保存路径，保存格式
     {
         Mat output;
         char fileName[128];
         int count = 0;
         int count_test = 0;
+
+        if (flag == 1)     //用于四色图的更改
+        {
+            BytesPerFrame = 2036;
+            for (int i = 0; i < areanum; ++i)
+            {
+                len_max[i] *= 2;
+            }
+        }
+
         if (len <= BytesPerFrame)
         {
-            unsigned char BUF[BytesPerFrame + 5];
+            unsigned char BUF[3000];
             memcpy(BUF, info, sizeof(unsigned char) * len);
             for (int i = len; i <= BytesPerFrame; ++i)
                 BUF[i] = rand() % 256;
             if (tag == 0)
             {
-                output = amplify(transform(CodeFrame(FrameType::Single, BUF, len, 0)), 0);
+                output = amplify(transform(CodeFrame(FrameType::Single, BUF, len, 0, flag)), 0);
                 sprintf_s(fileName, "%s\\test%05d.%s", savePath, count_test++, outputFormat);
                 imwrite(fileName, output);
             }
-            output = amplify(CodeFrame(FrameType::Single, BUF, len, 0), 1);
+            output = amplify(CodeFrame(FrameType::Single, BUF, len, 0, flag), 1);
             sprintf_s(fileName, "%s\\%05d.%s", savePath, count++, outputFormat);
             imwrite(fileName, output);
         }
@@ -62,11 +72,11 @@ namespace Code
             int PicNum = 0;
             if (tag == 0)
             {
-                output = amplify(transform(CodeFrame(FrameType::Start, info, len, PicNum++)), 0);
+                output = amplify(transform(CodeFrame(FrameType::Start, info, len, PicNum++, flag)), 0);
                 sprintf_s(fileName, "%s\\test%05d.%s", savePath, count_test++, outputFormat);
                 imwrite(fileName, output);
             }
-            output = amplify(CodeFrame(FrameType::Start, info, len, PicNum++), 1);
+            output = amplify(CodeFrame(FrameType::Start, info, len, PicNum++, flag), 1);
             sprintf_s(fileName, "%s\\%05d.%s", savePath, count++, outputFormat);
             imwrite(fileName, output);
             do
@@ -77,27 +87,27 @@ namespace Code
                 {
                     if (tag == 0)
                     {
-                        output = amplify(transform(CodeFrame(FrameType::Normal, info, BytesPerFrame, PicNum++)), 0);
+                        output = amplify(transform(CodeFrame(FrameType::Normal, info, BytesPerFrame, PicNum++, flag)), 0);
                         sprintf_s(fileName, "%s\\test%05d.%s", savePath, count_test++, outputFormat);
                         imwrite(fileName, output);
                     }
-                    output = amplify(CodeFrame(FrameType::Normal, info, BytesPerFrame, PicNum++), 1);
+                    output = amplify(CodeFrame(FrameType::Normal, info, BytesPerFrame, PicNum++, flag), 1);
                     sprintf_s(fileName, "%s\\%05d.%s", savePath, count++, outputFormat);
                     imwrite(fileName, output);
                 }
                 else
                 {
-                    unsigned char BUF[BytesPerFrame + 5];
+                    unsigned char BUF[3000];
                     memcpy(BUF, info, sizeof(unsigned char) * len);
                     for (int i = len; i <= BytesPerFrame; ++i)
                         BUF[i] = rand() % 256;
                     if (tag == 0)
                     {
-                        output = amplify(transform(CodeFrame(FrameType::End, BUF, len, PicNum++)), 0);
+                        output = amplify(transform(CodeFrame(FrameType::End, BUF, len, PicNum++, flag)), 0);
                         sprintf_s(fileName, "%s\\test%05d.%s", savePath, count_test++, outputFormat);
                         imwrite(fileName, output);
                     }
-                    output = amplify(CodeFrame(FrameType::End, BUF, len, PicNum++), 1);
+                    output = amplify(CodeFrame(FrameType::End, BUF, len, PicNum++, flag), 1);
                     sprintf_s(fileName, "%s\\%05d.%s", savePath, count++, outputFormat);
                     imwrite(fileName, output);
                 }
@@ -133,7 +143,7 @@ namespace Code
         }
         return output;
     }
-    Mat CodeFrame(FrameType frameType, unsigned char* info, unsigned long tailLen, int PicNum)
+    Mat CodeFrame(FrameType frameType, unsigned char* info, unsigned long tailLen, int PicNum, int flag)
     {
         Mat codeMat = Mat(FrameSize, FrameSize, CV_8UC3, Vec3b(255, 255, 255));     //底片为白色
         if (frameType == FrameType::Start || frameType == FrameType::Normal)
@@ -149,7 +159,7 @@ namespace Code
         for (int i = 0; i < areanum && tailLen > 0; ++i)
         {
             int len_now = std::min(tailLen, len_max[i]);
-            BulidInfoRect(codeMat, info, len_now, i);
+            BulidInfoRect(codeMat, info, len_now, i, flag);
             tailLen -= len_now;
             len_CRC += len_now;
             if (i == 0 || i == 4)          //区域1和区域2，3，4，5进行校验
@@ -188,7 +198,7 @@ namespace Code
                     mat.at<Vec3b>(pointPos[i][0] + j, pointPos[i][1] + k) =
                     vec3bBig[(int)max(fabs(j - 8.5), fabs(k - 8.5))];       //打印回字
     }
-    void BulidInfoRect(Mat& mat, unsigned char* info, unsigned long len, int areaID)
+    void BulidInfoRect(Mat& mat, unsigned char* info, unsigned long len, int areaID, int flag)
     {
         const unsigned char* pos = (const unsigned char*)info;
         const unsigned char* end = pos + len;
@@ -197,21 +207,30 @@ namespace Code
             uint32_t outputCode = 0;
             for (int j = 0; j < areapos[areaID][0][1] / 8; ++j)    // 1 char = 8 bits
             {
-                outputCode |= *pos++;
-                /*
-                for (int k = 0; k < 2; ++k)
+                if(flag == 0)
+                    outputCode |= *pos++;
+                else if (flag == 1)
                 {
-                    outputCode <<= 8;
-                    if (pos != end)
-                        outputCode |= *pos++;
+                    for (int k = 0; k < 2; ++k)
+                    {
+                        outputCode <<= 8;
+                        if (pos != end)
+                            outputCode |= *pos++;
+                    }
                 }
-                */
+                
                 for (int k = areapos[areaID][1][1]; k < areapos[areaID][1][1] + 8; ++k)
                 {
-                    //  mat.at<Vec3b>(i+areapos[areaID][1][0], j*8+k) = pixel[outputCode&3];
-                    //  outputCode >>= 2;
-                    mat.at<Vec3b>(i + areapos[areaID][1][0], j * 8 + k) = pixel[(outputCode & 1) ? 7 : 0];
-                    outputCode >>= 1;
+                    if (flag == 1)
+                    {
+                        mat.at<Vec3b>(i + areapos[areaID][1][0], j * 8 + k) = pixel[outputCode & 3];
+                        outputCode >>= 2;
+                    }
+                    else if (flag == 0)
+                    {
+                        mat.at<Vec3b>(i + areapos[areaID][1][0], j * 8 + k) = pixel[(outputCode & 1) ? 7 : 0];
+                        outputCode >>= 1;
+                    }
                 }
                 if (pos == end) break;
             }
