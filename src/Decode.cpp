@@ -4,8 +4,8 @@
 Point Decode::Center_cal(vector<vector<Point> > contours, int i)
 {
 	int centerx = 0, centery = 0, n = static_cast<int>(contours[i].size());
-	//åœ¨æå–çš„å°æ­£æ–¹å½¢çš„è¾¹ç•Œä¸Šæ¯éš”å‘¨é•¿ä¸ªåƒç´ æå–ä¸€ä¸ªç‚¹çš„åæ ‡ï¼Œ
-	//æ±‚æ‰€æå–å››ä¸ªç‚¹çš„å¹³å‡åæ ‡ï¼ˆå³ä¸ºå°æ­£æ–¹å½¢çš„å¤§è‡´ä¸­å¿ƒï¼‰
+	//ÔÚÌáÈ¡µÄĞ¡Õı·½ĞÎµÄ±ß½çÉÏÃ¿¸ôÖÜ³¤¸öÏñËØÌáÈ¡Ò»¸öµãµÄ×ø±ê£¬
+	//ÇóËùÌáÈ¡ËÄ¸öµãµÄÆ½¾ù×ø±ê£¨¼´ÎªĞ¡Õı·½ĞÎµÄ´óÖÂÖĞĞÄ£©
 	centerx = (contours[i][n / 4].x + contours[i][n * 2 / 4].x + contours[i][3 * n / 4].x + contours[i][n - 1].x) / 4;
 	centery = (contours[i][n / 4].y + contours[i][n * 2 / 4].y + contours[i][3 * n / 4].y + contours[i][n - 1].y) / 4;
 	Point point1 = Point(centerx, centery);
@@ -15,7 +15,7 @@ Point Decode::Center_cal(vector<vector<Point> > contours, int i)
 
 bool Decode::QrRate(float rate)
 {
-	//å¤§æ¦‚æ¯”ä¾‹ ä¸èƒ½å¤ªä¸¥æ ¼
+	//´ó¸Å±ÈÀı ²»ÄÜÌ«ÑÏ¸ñ
 	return rate > 0.3 && rate < 1.9;
 }
 
@@ -60,7 +60,7 @@ bool Decode::QrColorRateX(cv::Mat& image, int flag)
 	if (vValueCount.size() < 5 || vValueCount.size() > 7)
 		return false;
 
-	//æ¨ªå‘é»‘ç™½æ¯”ä¾‹1:1:3:1:1
+	//ºáÏòºÚ°×±ÈÀı1:1:3:1:1
 	int index = -1;
 	int maxCount = -1;
 	for (int i = 0; i < vValueCount.size(); i++)
@@ -80,13 +80,13 @@ bool Decode::QrColorRateX(cv::Mat& image, int flag)
 		}
 	}
 
-	//å·¦è¾¹ å³è¾¹ éƒ½æœ‰ä¸¤ä¸ªå€¼ï¼Œæ‰è¡Œ
+	//×ó±ß ÓÒ±ß ¶¼ÓĞÁ½¸öÖµ£¬²ÅĞĞ
 	if (index < 2)
 		return false;
 	if ((vValueCount.size() - index) < 3)
 		return false;
 
-	//é»‘ç™½æ¯”ä¾‹1:1:3:1:1
+	//ºÚ°×±ÈÀı1:1:3:1:1
 	float rate = ((float)maxCount) / 3.00;
 
 	if (!QrRate(vValueCount[index - 2] / rate))
@@ -142,7 +142,7 @@ bool Decode::QrColorRateY(cv::Mat& image, int flag)
 	if (vValueCount.size() < 5 || vValueCount.size() > 7)
 		return false;
 
-	//æ¨ªå‘é»‘ç™½æ¯”ä¾‹1:1:3:1:1
+	//ºáÏòºÚ°×±ÈÀı1:1:3:1:1
 	int index = -1;
 	int maxCount = -1;
 	for (int i = 0; i < vValueCount.size(); i++)
@@ -162,13 +162,13 @@ bool Decode::QrColorRateY(cv::Mat& image, int flag)
 		}
 	}
 
-	//å·¦è¾¹ å³è¾¹ éƒ½æœ‰ä¸¤ä¸ªå€¼ï¼Œæ‰è¡Œ
+	//×ó±ß ÓÒ±ß ¶¼ÓĞÁ½¸öÖµ£¬²ÅĞĞ
 	if (index < 2)
 		return false;
 	if ((vValueCount.size() - index) < 3)
 		return false;
 
-	//é»‘ç™½æ¯”ä¾‹1:1:3:1:1
+	//ºÚ°×±ÈÀı1:1:3:1:1
 	float rate = ((float)maxCount) / 3.00;
 
 	if (!QrRate(vValueCount[index - 2] / rate))
@@ -240,14 +240,14 @@ Mat Decode::CropImage(Mat& img, RotatedRect& rotatedRect)
 
 bool Decode::QrPoint(vector<Point>& contour, Mat& img, int i)
 {
-	//æœ€å°å¤§å°é™å®š
+	//×îĞ¡´óĞ¡ÏŞ¶¨
 	RotatedRect rotated_rect = minAreaRect(contour);
 	if (rotated_rect.size.height < 40 || rotated_rect.size.width < 40)
 		return false;
-	//å°†äºŒç»´ç ä»æ•´ä¸ªå›¾ä¸ŠæŠ å‡ºæ¥
+	//½«¶şÎ¬Âë´ÓÕû¸öÍ¼ÉÏ¿Ù³öÀ´
 	cv::Mat cropImg = CropImage(img, rotated_rect);
 	int flag = i++;
-	//æ¨ªå‘é»‘ç™½æ¯”ä¾‹1:1:3:1:1
+	//ºáÏòºÚ°×±ÈÀı1:1:3:1:1
 	bool result = IsQrColorRate(cropImg, flag);
 	return result;
 }
@@ -319,8 +319,8 @@ bool Decode::isCorner(Mat& image)
 		{
 			Rect rect = boundingRect(Mat(contours[i]));
 			rectangle(image, rect, Scalar(0, 0, 255), 2);
-			/******************ç”±å›¾å¯çŸ¥æœ€é‡Œé¢çš„çŸ©å½¢å®½åº¦å æ€»å®½çš„3/7***********************/
-			if (rect.width < mask.cols * 2 / 7)      //2/7æ˜¯ä¸ºäº†é˜²æ­¢ä¸€äº›å¾®å°çš„ä»¿å°„
+			/******************ÓÉÍ¼¿ÉÖª×îÀïÃæµÄ¾ØĞÎ¿í¶ÈÕ¼×Ü¿íµÄ3/7***********************/
+			if (rect.width < mask.cols * 2 / 7)      //2/7ÊÇÎªÁË·ÀÖ¹Ò»Ğ©Î¢Ğ¡µÄ·ÂÉä
 				continue;
 			if (Ratete(dstGray(rect)) > 0.75)      
 			{
@@ -388,11 +388,11 @@ int Decode::findQranchor(Mat& srcImg, Mat& dst)
 			k = hierarchy[k][2];
 			ic++;
 		}
-		//æœ‰ä¸¤ä¸ªå­è½®å»“æ‰æ˜¯äºŒç»´ç çš„é¡¶ç‚¹
+		//ÓĞÁ½¸ö×ÓÂÖÀª²ÅÊÇ¶şÎ¬ÂëµÄ¶¥µã
 		if (ic >= 2)
 		{
 			bool isQr = QrPoint(contours[parentIdx], srcGray, parentIdx);
-			//ä¿å­˜æ‰¾åˆ°çš„å››ä¸ªé»‘è‰²å®šä½è§’
+			//±£´æÕÒµ½µÄËÄ¸öºÚÉ«¶¨Î»½Ç
 			if (isQr)
 				contour2.push_back(contours[parentIdx]);
 			parentIdx = -1;
@@ -480,18 +480,18 @@ int Decode::getBit(Vec3b pix)
 
 	if (a == 0 && b == 0 && c == 0)
 	{
-		return 0;//é»‘
+		return 0;//ºÚ
 	}
 	else if (a == 255 && b == 255 && c == 255)
 	{
-		return 1;//ç™½
+		return 1;//°×
 	}
 }
 
 int Decode::getType(Mat& srcImg)
 {
 	int typecode = 0;//code=3
-	int k = 1;//Kä¸ºäºŒè¿›åˆ¶è¿ç®—çš„ç³»æ•°
+	int k = 1;//KÎª¶ş½øÖÆÔËËãµÄÏµÊı
 	for (int i = 0; i < 2; i++)
 	{
 		Vec3b pix = srcImg.at<Vec3b>(16, i);
@@ -508,14 +508,14 @@ int Decode::getType(Mat& srcImg)
 		return END;
 	case 3:
 		return SINGLE;
-	}//å°ç«¯æ³•å­—èŠ‚
+	}//Ğ¡¶Ë·¨×Ö½Ú
 }
 
 int Decode::getLength(Mat& srcImg)
 {
 	int length = 0;
 	int k = 1;
-	for (int i = 0; i < 12; i++)//ç¬¬16è¡Œ[3,15]ç”¨æ¥å­˜é•¿åº¦
+	for (int i = 0; i < 12; i++)//µÚ16ĞĞ[3,15]ÓÃÀ´´æ³¤¶È
 	{
 		Vec3b pix = srcImg.at<Vec3b>(16, 4 + i);
 		length += k * getBit(pix);
@@ -546,8 +546,8 @@ void Decode::decode(Mat& dst, int& length, int& type,vector<int>&Binary)
 
 	tmplen = tmplen * 8;
 	//block A
-	int index = 0;//æš‚å­˜æ•°ç»„çš„ä¸‹æ ‡
-	for (int i = 17; i < 80; i++)//éå†è¡Œ
+	int index = 0;//Ôİ´æÊı×éµÄÏÂ±ê
+	for (int i = 17; i < 80; i++)//±éÀúĞĞ
 	{
 		for (int j = 0; j < 16; j++)
 		{
@@ -560,7 +560,7 @@ void Decode::decode(Mat& dst, int& length, int& type,vector<int>&Binary)
 	}//blockA
 
 
-	for (int i = 0; i < 16; i++)//éå†è¡Œ
+	for (int i = 0; i < 16; i++)//±éÀúĞĞ
 	{
 		for (int j = 0; j < 64; j++)
 		{
@@ -573,7 +573,7 @@ void Decode::decode(Mat& dst, int& length, int& type,vector<int>&Binary)
 	}//blockB
 
 
-	for (int i = 16; i < 96; i++)//éå†è¡Œ
+	for (int i = 16; i < 96; i++)//±éÀúĞĞ
 	{
 		for (int j = 0; j < 64; j++)
 		{
@@ -584,7 +584,7 @@ void Decode::decode(Mat& dst, int& length, int& type,vector<int>&Binary)
 		}
 	}//BOLCK3&BLOCK4
 
-	for (int i = 16; i < 80; i++)//éå†è¡Œ
+	for (int i = 16; i < 80; i++)//±éÀúĞĞ
 	{//block5
 		for (int j = 0; j < 16; j++)
 		{
@@ -599,7 +599,7 @@ void Decode::decode(Mat& dst, int& length, int& type,vector<int>&Binary)
 int Decode::getFlag(Mat& srcImg)
 {
 	int flagCode = 0;//code=3
-	int k = 1;//Kä¸ºäºŒè¿›åˆ¶è¿ç®—çš„ç³»æ•°
+	int k = 1;//KÎª¶ş½øÖÆÔËËãµÄÏµÊı
 	for (int i = 2; i < 4; i++)
 	{
 		Vec3b pix = srcImg.at<Vec3b>(16, i);

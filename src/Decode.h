@@ -19,7 +19,6 @@ private:
 	const int ROW;
 	const int COL;
 
-
 	Point Center_cal(vector<vector<Point> > contours, int i);
 	bool QrRate(float rate);
 	bool QrColorRateX(cv::Mat& image, int flag);
@@ -38,9 +37,9 @@ public:
 	void decode(Mat& srcImg, int& length, int& type,vector<int> &Binary);
 	int findQranchor(Mat& srcImg, Mat& dst);
 
-	int  getBit(Vec3b pix);//è¾“å…¥åæ ‡ç‚¹ï¼Œè·å– 01 
-	int getType(Mat& srcImg);//è·å–äºŒç»´ç ç±»å‹ //ä¼ å…¥å›¾ç‰‡éœ€è¦96x96
-	int getLength(Mat& srcImg);//ä¼ å…¥å›¾ç‰‡éœ€è¦96x96
+	int  getBit(Vec3b pix);//ÊäÈë×ø±êµã£¬»ñÈ¡ 01 
+	int getType(Mat& srcImg);//»ñÈ¡¶şÎ¬ÂëÀàĞÍ //´«ÈëÍ¼Æ¬ĞèÒª96x96
+	int getLength(Mat& srcImg);//´«ÈëÍ¼Æ¬ĞèÒª96x96
 	int getFlag(Mat& srcImg);
 	double getRate(Mat& srcImg);
 	unsigned char* binToDec(vector<int>& Binary);
