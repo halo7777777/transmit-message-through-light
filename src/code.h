@@ -21,4 +21,5 @@ namespace Code
 	Mat amplify(const Mat& src, int tag);
 	void Main(unsigned char* info, unsigned long len, const char* savePath, const char* outputFormat, int tag);
 	Mat transform(const Mat& src);        //?°„????????°Ë??????°ß??|?????£§
+	void BuildCRC_16(Mat& mat, unsigned char* info, int len, int area_No);             // π”√CRC-16/CCITT        x16+x12+x5+1 
 }
