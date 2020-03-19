@@ -48,7 +48,7 @@ int main()
 	{
 		Qrdecode mydecode;
 		mydecode.mydecode();
-		function = 3;
+		//function = 3;
 	}
 	if (function == 3)
 	{

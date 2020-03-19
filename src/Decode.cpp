@@ -525,99 +525,75 @@ int Decode::getLength(Mat& srcImg)
 }
 
 
-unsigned char* Decode::decode(Mat& dst, int& length, int& type)
+void Decode::decode(Mat& dst, int& length, int& type,vector<int>&Binary)
 {
 
 
 	type = getType(dst);
-	unsigned char* tmp = NULL;
 	length = getLength(dst);
 	int tmplen;
+
 
 	if (type == SINGLE || type == END)
 
 	{
 		tmplen = length;
-		tmp = new unsigned char[tmplen];
-
 	}
 	else if (type == BEGIN||type==NORMAL)
 	{
 		tmplen = MAXSIZE;
-		tmp = new unsigned char[tmplen];
 	}
-	for (int i = 0; i < tmplen; i++) { tmp[i] = 0; }
+
+	tmplen = tmplen * 8;
 	//block A
 	int index = 0;//暂存数组的下标
 	for (int i = 17; i < 80; i++)//遍历行
 	{
-		for (int part = 0; part < 2; part++)//计算字节
+		for (int j = 0; j < 16; j++)
 		{
-			int code = 0;
-			int k = 1;
-			for (int j = 0; j < 8; j++)
-			{
-				Vec3b pix = dst.at<Vec3b>(i, j + part * 8);
-				code += k * getBit(pix);
-				k *= 2;
-			}
-			if (index >= tmplen) return tmp;
-			tmp[index++] = (unsigned char)code;
+			Vec3b pix = dst.at<Vec3b>(i, j);
+			Binary.push_back(getBit(pix));
+			if (index >= tmplen) return;
+			index++;
 		}
-	}
+
+	}//blockA
+
+
 	for (int i = 0; i < 16; i++)//遍历行
 	{
-		for (int part = 0; part < 8; part++)//计算字节
+		for (int j = 0; j < 64; j++)
 		{
-			int code = 0;
-			int k = 1;
-			for (int j = 0; j < 8; j++)
-			{
-				Vec3b pix = dst.at<Vec3b>(i, 16 + j + part * 8);
-				code += k * getBit(pix);
-				k *= 2;
-			}
-			if (index >= tmplen) return tmp;
-			tmp[index++] = (unsigned char)code;
+			Vec3b pix = dst.at<Vec3b>(i, 16 + j);
+			Binary.push_back(getBit(pix));
+			if (index >= tmplen) return;
+			index++;
 		}
-	}
+
+	}//blockB
+
 
 	for (int i = 16; i < 96; i++)//遍历行
 	{
-		for (int part = 0; part < 8; part++)//计算字节
+		for (int j = 0; j < 64; j++)
 		{
-			int code = 0;
-			int k = 1;
-			for (int j = 0; j < 8; j++)
-			{
-				Vec3b pix = dst.at<Vec3b>(i, 16+j + part * 8);
-				code += k * getBit(pix);
-				k *= 2;
-			}
-			if (index >= tmplen) return tmp;
-			tmp[index++] = (unsigned char)code;
+			Vec3b pix = dst.at<Vec3b>(i, 16+j);
+			Binary.push_back(getBit(pix));
+			if (index >= tmplen) return;
+			index++;
 		}
-	}
-
+	}//BOLCK3&BLOCK4
 
 	for (int i = 16; i < 80; i++)//遍历行
 	{//block5
-		for (int part = 8; part < 10; part++)//计算字节
+		for (int j = 0; j < 16; j++)
 		{
-			int code = 0;
-			int k = 1;
-			for (int j = 0; j < 8; j++)
-			{
-				Vec3b pix = dst.at<Vec3b>(i, 16+j + part * 8);
-				code += k * getBit(pix);
-				k *= 2;
-			}
-			if (index >= tmplen) return tmp;
-			tmp[index++] = (unsigned char)code;
+			Vec3b pix = dst.at<Vec3b>(i, 80+j);
+			Binary.push_back(getBit(pix));
+			if (index >= tmplen) return;
+			index++;
 		}
 	}
-	return tmp;
-
 }
 
 int Decode::getFlag(Mat& srcImg)
@@ -647,4 +623,28 @@ double Decode::getRate(Mat& srcImg)
 	}
 	double rate = (1.0 * counter) / (96 * 96);
 	return rate;
+}
+
+
+unsigned char* Decode::binToDec(vector<int> &Binary)
+{
+	int decLen = Binary.size() / 8;
+	int binLen = Binary.size();
+	unsigned char* tmp = new unsigned char[decLen];
+	int index = 0;
+	for (index = 0; index < decLen; index++)
+	{
+		int num = 0;
+		int k = 1;
+		int begin = index * 8;
+		int end = begin + 8;
+		for (int i = begin; i < end; i++)
+		{
+			num += k * Binary[i];
+			k *= 2;
+		}
+		tmp[index] = num;
+	}
+	return tmp;
+
 }

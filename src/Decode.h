@@ -35,7 +35,7 @@ private:
 
 public:
 	Decode(int size = 96) :ROW(size), COL(size) {}
-	unsigned char* decode(Mat& srcImg, int& length, int& type);
+	void decode(Mat& srcImg, int& length, int& type,vector<int> &Binary);
 	int findQranchor(Mat& srcImg, Mat& dst);
 
 	int  getBit(Vec3b pix);//输入坐标点，获取 01 
@@ -43,4 +43,5 @@ public:
 	int getLength(Mat& srcImg);//传入图片需要96x96
 	int getFlag(Mat& srcImg);
 	double getRate(Mat& srcImg);
+	unsigned char* binToDec(vector<int>& Binary);
 };

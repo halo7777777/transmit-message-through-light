@@ -22,7 +22,7 @@ void Qrdecode::mydecode()
 	int count = 1;
 	Mat img;
 	Mat dst;
-	int foundindex = 116;
+	int foundindex = 0;
 	while (true)
 	{
 		sprintf_s(fileName, "imageOutput\\%05d.png", count++);
@@ -38,12 +38,12 @@ void Qrdecode::mydecode()
 		}
 		else
 		{
-			cout << "not found" << fileName;
+			cout << "not found" << fileName << endl;
 		}
 	}
 	
-	//foundindex = 87;
 	//遍历每张图片，检测同步码是否发生变化
+		//同时过滤掉残影图
 		//将有需要的名字传入传入array中，获取二维码张树
 	vector<string> fileNames;
 	int currentFlag = 0;
@@ -62,7 +62,7 @@ void Qrdecode::mydecode()
 		currentFlag = dec.getFlag(img);
 		if (currentFlag==2&&originFlag==1|| currentFlag == 1 && originFlag == 2)
 		{
-			if (dec.getRate(img) - 0.51 < 0)
+			if (dec.getRate(img) - 0.51 < 0)//如果不是残影
 			{
 				fileNames.push_back(fileName);
 				originFlag = currentFlag;
@@ -72,23 +72,18 @@ void Qrdecode::mydecode()
 		{
 			continue;
 		}
-
 	}
-
-
 
 	int numOfPic = fileNames.size();//converter.GetFilesNumber(path);
 	cout << "num of true pic " << numOfPic << endl;
 	char filename[10];
-	///sprintf_s(filename, "%05d.png", numOfPic);//最后一张
 	img = imread(fileNames[numOfPic-1]);//最后张图片单独处理
 	int length;
+	vector<int> Binary;
 	unsigned char* output = NULL;
 	int type;
-	unsigned char* tmp = dec.decode(img, length, type);//为了获取最后一张的长度
+	dec.decode(img, length, type,Binary);//为了获取最后一张的长度
 	int total_length = (numOfPic - 1) * 1022 + length;
-	//Mat image;//源图片
-	int i, j;
 	char outfilename[] = "out.bin";
 	count=0;//图像文件计数
 	
@@ -98,17 +93,13 @@ void Qrdecode::mydecode()
 
 	if (type == SINGLE)//如果只有单张图
 	{
-		output = tmp;//length为总文件的有效数据长度
+		//length为总文件的有效数据长度
 	}//正常退出
-	else //if (type == BEGIN)//多张图片的第一张图片
+	else
 	{
 		//length为总文件的长度
-		int tmplen = MAXSIZE;
-		output = new unsigned char[total_length];//用于储存数据的数组
-		//memcpy(output + indexptr, tmp, tmplen);//复制到最终的数组里
-		//indexptr += tmplen;
-		delete[]tmp;
-	}//不可能是end和normal了
+		Binary.clear();
+	}
 
 	count = 0;
 	int tmplen;
@@ -116,16 +107,15 @@ void Qrdecode::mydecode()
 	while (true)
 	{
 		if (count == numOfPic) break;
-		//sprintf_s(fileName, "imageOutput\\%05d.png", count++);
 		img = imread(fileNames[count++]);//读入图像；
-		unsigned char* tmp = dec.decode(img, tmplen, type);
+		dec.decode(img, tmplen, type,Binary);
 		if (tmplen > 1022) tmplen = 1022;
 		cout << "dealing with " << fileNames [count-1]<< " "<<tmplen << endl;
-		memcpy(output + indexptr, tmp, tmplen);//复制到最终的数组里
-		indexptr += tmplen;
-		delete[]tmp;
 	}
+
+	output = dec.binToDec(Binary);
 
 	converter.ByteToFile(output, outfilename, total_length);
 
+	delete[]output;
 }

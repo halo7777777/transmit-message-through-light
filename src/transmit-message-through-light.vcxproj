@@ -25,14 +25,12 @@
     <ClCompile Include="FileConvert.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Qrdecode.cpp" />
-    <ClCompile Include="ZipTool.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="code.h" />
     <ClInclude Include="Decode.h" />
     <ClInclude Include="FileConvert.h" />
     <ClInclude Include="Qrdecode.h" />
-    <ClInclude Include="ZipTool.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
