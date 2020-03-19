@@ -9,7 +9,9 @@
 #define NORMAL 1
 #define END 2
 #define SINGLE 3
-#define MAXSIZE 1022
+#define MAXSIZE 1018
+
+
 
 using namespace std;
 using namespace cv;
@@ -18,6 +20,7 @@ class Decode
 private:
 	const int ROW;
 	const int COL;
+
 
 	Point Center_cal(vector<vector<Point> > contours, int i);
 	bool QrRate(float rate);
@@ -30,11 +33,11 @@ private:
 	double Ratete(Mat count);
 	bool isCorner(Mat& image);
 	void anchorSequence(vector<Point2f>& anchor_center);
-
+	int BuildCRC_16(unsigned char* info, int len);
 
 public:
 	Decode(int size = 96) :ROW(size), COL(size) {}
-	void decode(Mat& srcImg, int& length, int& type,vector<int> &Binary);
+	unsigned char* decode(Mat& srcImg, int& length, int& type, vector<unsigned char>& valid);
 	int findQranchor(Mat& srcImg, Mat& dst);
 
 	int  getBit(Vec3b pix);//输入坐标点，获取 01 
@@ -42,5 +45,4 @@ public:
 	int getLength(Mat& srcImg);//传入图片需要96x96
 	int getFlag(Mat& srcImg);
 	double getRate(Mat& srcImg);
-	unsigned char* binToDec(vector<int>& Binary);
 };
