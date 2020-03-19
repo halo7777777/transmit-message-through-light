@@ -48,8 +48,9 @@ int main()
 	{
 		qtdecode mydecode;
 		mydecode.mydecode();
+		function = 3;
 	}
-	else if (function == 3)
+	if (function == 3)
 	{
 		char inname[] = "out.bin";
 		char outname[] = "in.bin";
@@ -59,6 +60,7 @@ int main()
 		unsigned long totalnum = 0, wrongnum = 0;
 		int cnt = 0;
 		int in, out;
+		unsigned long wrongByte = 0;
 		while (cnt++ < min(inSize, outSize))
 		{
 			in = inByte[cnt];
@@ -66,6 +68,7 @@ int main()
 			totalnum += 8;
 			if (inByte[cnt] != outByte[cnt])
 			{
+				wrongByte++;
 				for (int i = 0; i < 8; i++)
 				{
 					if ((in & 1) != (out & 1))
@@ -80,6 +83,7 @@ int main()
 		double n;
 		n = ((1.0*wrongnum) / totalnum);
 		cout << "bit error rate is " << n << endl;
+		cout << "Byte error rate is " << ((1.0 * wrongByte) / totalnum);
 		return 0;
 	}
 }
