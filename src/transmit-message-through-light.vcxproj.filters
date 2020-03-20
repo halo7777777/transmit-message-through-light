@@ -27,9 +27,6 @@
     <ClCompile Include="Decode.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="cvtest.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="Qrdecode.cpp">
       <Filter>源文件</Filter>
     </ClCompile>

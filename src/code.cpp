@@ -155,6 +155,8 @@ namespace Code
             if (i == 0 || i == 4)          //区域1和区域2，3，4，5进行校验
             {
                 BuildCRC_16(codeMat, info_CRC, len_CRC, i);
+				info_CRC += len_CRC;
+				len_CRC = 0;
             }
             info += len_now;
         }
@@ -303,15 +305,17 @@ namespace Code
     };
     void BuildCRC_16(Mat& mat, unsigned char* info, int len, int area_No)         //CRC-16/CCITT        x16+x12+x5+1 
     {
-        uint16_t crc = 0;
+        unsigned short crc = 0;
         //得到crc
         while (len-- != 0)
         {
-            unsigned int high = (unsigned int)(crc / 256); //取CRC高8位
-            crc <<= 8;
-            crc ^= crc_ta_8[high ^ *info];
-            info++;
+            //unsigned int high = (unsigned int)(crc / 256); //取CRC高8位
+            //crc <<= 8;
+            //crc ^= crc_ta_8[high ^ *info];
+            //info++;
+			crc = crc_ta_8[(crc >> 8 ^ *info++) & 0xff] ^ (crc << 8);
         }
+		crc = ~crc;
   //      printf("%x\n", crc);
         //写入二维码图像中
         for (int i = 0; i < 16; i++)

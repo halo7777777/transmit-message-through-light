@@ -13,7 +13,7 @@ using namespace cv;
 
 int main()
 {
-	int fps = 10;
+	int fps = 25;
 	FileConvert converter;
 
 	string path = "imageSrc\\";
@@ -48,7 +48,7 @@ int main()
 	{
 		Qrdecode mydecode;
 		mydecode.mydecode();
-		//function = 3;
+		function = 3;
 	}
 	if (function == 3)
 	{
@@ -68,6 +68,7 @@ int main()
 			totalnum += 8;
 			if (inByte[cnt] != outByte[cnt])
 			{
+				//cout << cnt << endl;
 				wrongByte++;
 				for (int i = 0; i < 8; i++)
 				{
