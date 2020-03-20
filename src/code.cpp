@@ -1,7 +1,7 @@
 #include"code.h"
 namespace Code
 {
-
+#define CRC_CCITT 0x1021
     unsigned long BytesPerFrame = 1018;    //每帧图的字节数
     constexpr int FrameSize = 100;
     constexpr int FrameOutputRate = 10;
@@ -35,21 +35,13 @@ namespace Code
         Single = 3,
 
     };
-    void Main(unsigned char* info, unsigned long len, const char* savePath, const char* outputFormat, int tag, int flag) // 字符串信息，长度，保存路径，保存格式
+    void Main(unsigned char* info, unsigned long len, const char* savePath, const char* outputFormat, int tag) // 字符串信息，长度，保存路径，保存格式
     {
         Mat output;
         char fileName[128];
         int count = 0;
         int count_test = 0;
 
-        if (flag == 1)     //用于四色图的更改
-        {
-            BytesPerFrame = 2036;
-            for (int i = 0; i < areanum; ++i)
-            {
-                len_max[i] *= 2;
-            }
-        }
 
         if (len <= BytesPerFrame)
         {
@@ -59,11 +51,11 @@ namespace Code
                 BUF[i] = rand() % 256;
             if (tag == 0)
             {
-                output = amplify(transform(CodeFrame(FrameType::Single, BUF, len, 0, flag)), 0);
+                output = amplify(transform(CodeFrame(FrameType::Single, BUF, len, 0)), 0);
                 sprintf_s(fileName, "%s\\test%05d.%s", savePath, count_test++, outputFormat);
                 imwrite(fileName, output);
             }
-            output = amplify(CodeFrame(FrameType::Single, BUF, len, 0, flag), 1);
+            output = amplify(CodeFrame(FrameType::Single, BUF, len, 0), 1);
             sprintf_s(fileName, "%s\\%05d.%s", savePath, count++, outputFormat);
             imwrite(fileName, output);
         }
@@ -72,11 +64,11 @@ namespace Code
             int PicNum = 0;
             if (tag == 0)
             {
-                output = amplify(transform(CodeFrame(FrameType::Start, info, len, PicNum++, flag)), 0);
+                output = amplify(transform(CodeFrame(FrameType::Start, info, len, PicNum++)), 0);
                 sprintf_s(fileName, "%s\\test%05d.%s", savePath, count_test++, outputFormat);
                 imwrite(fileName, output);
             }
-            output = amplify(CodeFrame(FrameType::Start, info, len, PicNum++, flag), 1);
+            output = amplify(CodeFrame(FrameType::Start, info, len, PicNum++), 1);
             sprintf_s(fileName, "%s\\%05d.%s", savePath, count++, outputFormat);
             imwrite(fileName, output);
             do
@@ -87,11 +79,11 @@ namespace Code
                 {
                     if (tag == 0)
                     {
-                        output = amplify(transform(CodeFrame(FrameType::Normal, info, BytesPerFrame, PicNum++, flag)), 0);
+                        output = amplify(transform(CodeFrame(FrameType::Normal, info, BytesPerFrame, PicNum++)), 0);
                         sprintf_s(fileName, "%s\\test%05d.%s", savePath, count_test++, outputFormat);
                         imwrite(fileName, output);
                     }
-                    output = amplify(CodeFrame(FrameType::Normal, info, BytesPerFrame, PicNum++, flag), 1);
+                    output = amplify(CodeFrame(FrameType::Normal, info, BytesPerFrame, PicNum++), 1);
                     sprintf_s(fileName, "%s\\%05d.%s", savePath, count++, outputFormat);
                     imwrite(fileName, output);
                 }
@@ -103,11 +95,11 @@ namespace Code
                         BUF[i] = rand() % 256;
                     if (tag == 0)
                     {
-                        output = amplify(transform(CodeFrame(FrameType::End, BUF, len, PicNum++, flag)), 0);
+                        output = amplify(transform(CodeFrame(FrameType::End, BUF, len, PicNum++)), 0);
                         sprintf_s(fileName, "%s\\test%05d.%s", savePath, count_test++, outputFormat);
                         imwrite(fileName, output);
                     }
-                    output = amplify(CodeFrame(FrameType::End, BUF, len, PicNum++, flag), 1);
+                    output = amplify(CodeFrame(FrameType::End, BUF, len, PicNum++), 1);
                     sprintf_s(fileName, "%s\\%05d.%s", savePath, count++, outputFormat);
                     imwrite(fileName, output);
                 }
@@ -143,7 +135,7 @@ namespace Code
         }
         return output;
     }
-    Mat CodeFrame(FrameType frameType, unsigned char* info, unsigned long tailLen, int PicNum, int flag)
+    Mat CodeFrame(FrameType frameType, unsigned char* info, unsigned long tailLen, int PicNum)
     {
         Mat codeMat = Mat(FrameSize, FrameSize, CV_8UC3, Vec3b(255, 255, 255));     //底片为白色
         if (frameType == FrameType::Start || frameType == FrameType::Normal)
@@ -159,14 +151,17 @@ namespace Code
         for (int i = 0; i < areanum && tailLen > 0; ++i)
         {
             int len_now = std::min(tailLen, len_max[i]);
-            BulidInfoRect(codeMat, info, len_now, i, flag);
+            BulidInfoRect(codeMat, info, len_now, i);
             tailLen -= len_now;
             len_CRC += len_now;
             if (i == 0 || i == 4)          //区域1和区域2，3，4，5进行校验
-            {
+            {         
                 BuildCRC_16(codeMat, info_CRC, len_CRC, i);
+                info_CRC += len_CRC;
+                len_CRC = 0;
             }
             info += len_now;
+      
         }
         return codeMat;
     }
@@ -198,7 +193,7 @@ namespace Code
                     mat.at<Vec3b>(pointPos[i][0] + j, pointPos[i][1] + k) =
                     vec3bBig[(int)max(fabs(j - 8.5), fabs(k - 8.5))];       //打印回字
     }
-    void BulidInfoRect(Mat& mat, unsigned char* info, unsigned long len, int areaID, int flag)
+    void BulidInfoRect(Mat& mat, unsigned char* info, unsigned long len, int areaID)
     {
         const unsigned char* pos = (const unsigned char*)info;
         const unsigned char* end = pos + len;
@@ -207,30 +202,11 @@ namespace Code
             uint32_t outputCode = 0;
             for (int j = 0; j < areapos[areaID][0][1] / 8; ++j)    // 1 char = 8 bits
             {
-                if(flag == 0)
-                    outputCode |= *pos++;
-                else if (flag == 1)
-                {
-                    for (int k = 0; k < 2; ++k)
-                    {
-                        outputCode <<= 8;
-                        if (pos != end)
-                            outputCode |= *pos++;
-                    }
-                }
-                
+                outputCode |= *pos++;
                 for (int k = areapos[areaID][1][1]; k < areapos[areaID][1][1] + 8; ++k)
                 {
-                    if (flag == 1)
-                    {
-                        mat.at<Vec3b>(i + areapos[areaID][1][0], j * 8 + k) = pixel[outputCode & 3];
-                        outputCode >>= 2;
-                    }
-                    else if (flag == 0)
-                    {
                         mat.at<Vec3b>(i + areapos[areaID][1][0], j * 8 + k) = pixel[(outputCode & 1) ? 7 : 0];
                         outputCode >>= 1;
-                    }
                 }
                 if (pos == end) break;
             }
@@ -322,16 +298,31 @@ namespace Code
     };
     void BuildCRC_16(Mat& mat, unsigned char* info, int len, int area_No)         //CRC-16/CCITT        x16+x12+x5+1 
     {
-        uint16_t crc = 0;
+        
+        unsigned short crc = 0;
         //得到crc
         while (len-- != 0)
         {
-            unsigned int high = (unsigned int)(crc / 256); //取CRC高8位
-            crc <<= 8;
-            crc ^= crc_ta_8[high ^ *info];
+            crc = crc_ta_8[(crc >> 8 ^ *info++) & 0xff] ^ (crc << 8);
+        }
+        crc = ~crc;
+        /*
+        unsigned int crc = 0;
+        while (len-- != 0)
+        {
+            for (unsigned char i = 0x80; i != 0; i /= 2)
+            {
+                crc *= 2;
+                if ((crc & 0x10000) != 0) //上一位CRC乘 2后，若首位是1，则除以 0x11021
+                    crc ^= 0x11021;
+
+                if ((*info & i) != 0)    //如果本位是1，那么CRC = 上一位的CRC + 本位/CRC_CCITT
+                    crc ^= CRC_CCITT;
+            }
             info++;
         }
-  //      printf("%x\n", crc);
+        */
+      //  printf("%d %0X\n", crc, crc);
         //写入二维码图像中
         for (int i = 0; i < 16; i++)
         {

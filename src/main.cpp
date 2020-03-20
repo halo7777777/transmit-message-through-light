@@ -1,4 +1,5 @@
 #include<iostream>
+
 #include"Decode.h"
 #include"FileConvert.h"
 #include<cstdio>
@@ -6,13 +7,14 @@
 #include"code.h"
 
 #include<algorithm>
-#include"qtdecode.h"
-
+#include"Qrdecode.h"
+#define CRC_CCITT 0x1021
 using namespace std;
 using namespace cv;
 
 int main()
 {
+
 	int fps = 10;
 	FileConvert converter;
 
@@ -31,14 +33,12 @@ int main()
 		cout << "Please input size :";
 		char filename[] = "in.bin";
 		cin >> size;//需要生成文件的大小，单位字节
-
 		converter.GenerateRandFile(filename, size);
-		bytes = converter.FileToByte(filename, &size);//读取文件生成的Byte数组
-		
-		Code::Main(bytes, size, "imageSrc\\", "png", 1, 1);  // tag：0裁剪图，1标准图， flag: 0黑白图， 1四色图
-		
-		converter.PicTransToVideo(fps);
+		bytes = converter.FileToByte(filename, &size);//读取文件生成的Byte数组	
 
+		Code::Main(bytes, size, "imageSrc\\", "png", 1);  // tag：0裁剪图，1标准图
+
+		converter.PicTransToVideo(fps);
 		return 0;
 	}
 	//
@@ -46,7 +46,7 @@ int main()
 
 	else if (function == 2)
 	{
-		qtdecode mydecode;
+		Qrdecode mydecode;
 		mydecode.mydecode();
 	}
 	else if (function == 3)
