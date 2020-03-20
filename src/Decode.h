@@ -21,7 +21,6 @@ private:
 	const int ROW;
 	const int COL;
 
-
 	Point Center_cal(vector<vector<Point> > contours, int i);
 	bool QrRate(float rate);
 	bool QrColorRateX(cv::Mat& image, int flag);

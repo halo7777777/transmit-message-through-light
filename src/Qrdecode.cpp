@@ -14,15 +14,15 @@ void Qrdecode::mydecode()
 	Decode dec;
 	string path = "imageOutput\\";
 	FileConvert converter;
-	//converter.VideoTransToPic();
+	converter.VideoTransToPic();
 	/*
 	先把所有图片转换为ROI
 	*/
 	int count = 1;
 	Mat img;
 	Mat dst;
-	int foundindex = 88;
-/*	while (true)
+	int foundindex = 85;
+	while (true)
 	{
 		sprintf_s(fileName, "imageOutput\\%05d.png", count++);
 		img = imread(fileName);
@@ -40,7 +40,7 @@ void Qrdecode::mydecode()
 			cout << "not found" << fileName;
 		}
 	}
-	*/
+
 	//foundindex = 87;
 	//遍历每张图片，检测同步码是否发生变化
 		//将有需要的名字传入传入array中，获取二维码张树
@@ -125,15 +125,29 @@ void Qrdecode::mydecode()
 		indexptr += tmplen;
 		delete[]tmp;
 	}
-	while (valid.size()<total_length)
+	while (valid.size() < total_length)
 	{
 		valid.push_back(0xff);
 	}
 	converter.ByteToFile(output, outfilename, total_length);
-	unsigned char* v = new unsigned char[valid.size()* sizeof(unsigned char)];
+	unsigned char* v = new unsigned char[valid.size() * sizeof(unsigned char)];
 	memcpy(v, &valid[0], valid.size() * sizeof(unsigned char));
 	converter.ByteToFile(output, outfilename, total_length);
 
+	int total_byte = valid.size();
+	int total_bit = valid.size() * 8;
+	int giveUp = 0;
+	for (int i = 0; i < total_byte; i++)
+	{
+		if (valid[i] == 0)
+		{
+			giveUp += 8;
+		}
+	}
+
+	cout << giveUp << endl; 
+
+
 	char vfname[] = "v.bin";
 	converter.ByteToFile(v, vfname, total_length);
-}
+} 

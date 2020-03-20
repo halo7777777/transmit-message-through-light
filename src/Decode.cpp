@@ -321,7 +321,7 @@ bool Decode::isCorner(Mat& image)
 			Rect rect = boundingRect(Mat(contours[i]));
 			rectangle(image, rect, Scalar(0, 0, 255), 2);
 			/******************由图可知最里面的矩形宽度占总宽的3/7***********************/
-			if (rect.width < mask.cols * 2 / 7)      //2/7是为了防止一些微小的仿射
+			if (rect.width < mask.cols * 2 / 7)     
 				continue;
 			if (Ratete(dstGray(rect)) > 0.75)
 			{
@@ -369,10 +369,11 @@ int Decode::findQranchor(Mat& srcImg, Mat& dst)
 	vector<vector<Point>> contours;
 	vector<Vec4i> hierarchy;
 	cvtColor(srcImg, srcGray, COLOR_BGR2GRAY);
-	threshold(srcGray, srcGray, 188, 255, THRESH_BINARY | THRESH_OTSU);
+//	threshold(srcGray, srcGray, 188, 255, THRESH_BINARY | THRESH_OTSU);
+	//threshold(srcGray, srcGray, 188, 255, THRESH_OTSU);
 	Mat otsu_gray;
-	//threshold(srcGray, otsu_gray, 150, 255, THRESH_BINARY);
-	//threshold(srcGray, srcGray, 188, 255, THRESH_BINARY);
+	//threshold(srcGray, otsu_gray, 188, 255, THRESH_BINARY);
+	threshold(srcGray, srcGray, 150, 255, THRESH_BINARY);
 
 	findContours(srcGray, contours, hierarchy, RETR_TREE, CHAIN_APPROX_SIMPLE);
 	int ic = 0;
@@ -455,11 +456,7 @@ int Decode::findQranchor(Mat& srcImg, Mat& dst)
 		origin_center.push_back(Point2f(cols * r / cons, rows * c / cons));
 		origin_center.push_back(Point2f(cols * r / cons, rows * r / cons));
 
-
 		Mat warp_mat = getPerspectiveTransform(src_center, origin_center);
-
-
-
 
 		warpPerspective(srcGray, output, warp_mat, srcImg.size());
 		resize(output, output, Size(96, 96));
@@ -529,7 +526,6 @@ int Decode::getLength(Mat& srcImg)
 unsigned char* Decode::decode(Mat& dst, int& length, int& type, vector<unsigned char> &valid)
 {
 
-
 	type = getType(dst);
 	unsigned char* tmp = NULL;
 	length = getLength(dst);
@@ -584,6 +580,11 @@ unsigned char* Decode::decode(Mat& dst, int& length, int& type, vector<unsigned 
 		{
 			valid.push_back(0x00);
 		}
+/*
+		cout << "CRCA" << valid.size() << endl;
+		cout << "CRCA" << index << endl;*/
+
+
 	} 
 	else
 	{
@@ -750,14 +751,12 @@ int Decode::BuildCRC_16(unsigned char* info, int len)         //CRC-16/CCITT    
 		0xef1f, 0xff3e, 0xcf5d, 0xdf7c, 0xaf9b, 0xbfba, 0x8fd9, 0x9ff8,
 		0x6e17, 0x7e36, 0x4e55, 0x5e74, 0x2e93, 0x3eb2, 0x0ed1, 0x1ef0
 	};
-	uint16_t crc = 0;
+	unsigned short crc = 0;
 	//得到crc
 	while (len-- != 0)
 	{
-		unsigned int high = (unsigned int)(crc / 256); //取CRC高8位
-		crc <<= 8;
-		crc ^= crc_ta_8[high ^ *info];
-		info++;
+		crc = crc_ta_8[(crc >> 8 ^ *info++) & 0xff] ^ (crc << 8);
 	}
+	crc = ~crc;
 	return crc;
 }
