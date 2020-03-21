@@ -15,6 +15,9 @@ void Qrdecode::mydecode()
 	string path = "imageOutput\\";
 	FileConvert converter;
 	converter.VideoTransToPic();
+
+	vector<Mat> dstTmp;
+
 	/*
 	先把所有图片转换为ROI
 	*/
@@ -31,13 +34,10 @@ void Qrdecode::mydecode()
 		if (found == 1)
 		{
 			foundindex = count - 1;
-			sprintf_s(tmpName, "imageTmp\\%05d.png", foundindex);
-			imwrite(tmpName, dst);
-			cout << "find anchor " << fileName << endl;
+			dstTmp.push_back(dst);
 		}
 		else
 		{
-			cout << "not found" << fileName;
 		}
 	}
 
@@ -45,26 +45,25 @@ void Qrdecode::mydecode()
 	//遍历每张图片，检测同步码是否发生变化
 		//将有需要的名字传入传入array中，获取二维码张树
 	vector<unsigned char> valid;
-	vector<string> fileNames;
 	int currentFlag = 0;
 	int originFlag = 0;
 	char beginPic[120];
-	sprintf_s(fileName, "imageTmp\\%05d.png", 1);
-	fileNames.push_back(fileName);
-	img = imread(fileName);
+	vector<int> validIndex;
+	validIndex.push_back(0);//第0张图片
+	img = dstTmp[0];
+
 	currentFlag = dec.getFlag(img);
 	originFlag = currentFlag;
-	for (int i = 2; i <= foundindex; i++)
+	for (int i = 1; i < foundindex; i++)
 	{
-		sprintf_s(fileName, "imageTmp\\%05d.png", i);
-		img = imread(fileName);
+		img = dstTmp[i];
 		if (img.data == NULL) continue;
 		currentFlag = dec.getFlag(img);
 		if (currentFlag == 2 && originFlag == 1 || currentFlag == 1 && originFlag == 2)
 		{
 			if (dec.getRate(img) - 0.51 < 0)
 			{
-				fileNames.push_back(fileName);
+				validIndex.push_back(i);//下标为i的图片有效
 				originFlag = currentFlag;
 			}
 		}
@@ -77,11 +76,10 @@ void Qrdecode::mydecode()
 
 
 
-	int numOfPic = fileNames.size();//converter.GetFilesNumber(path);
+	int numOfPic = validIndex.size();//converter.GetFilesNumber(path);
 	cout << "num of true pic " << numOfPic << endl;
 	char filename[10];
-	///sprintf_s(filename, "%05d.png", numOfPic);//最后一张
-	img = imread(fileNames[numOfPic - 1]);//最后张图片单独处理
+	img = dstTmp[validIndex[numOfPic-1]];//最后张图片单独处理
 	int length;
 	unsigned char* output = NULL;
 	int type;
@@ -116,11 +114,9 @@ void Qrdecode::mydecode()
 	while (true)
 	{
 		if (count == numOfPic) break;
-		//sprintf_s(fileName, "imageOutput\\%05d.png", count++);
-		img = imread(fileNames[count++]);//读入图像；
+		img = dstTmp[validIndex[count++]];//读入图像；
 		unsigned char* tmp = dec.decode(img, tmplen, type, valid);
 		if (tmplen > 1018) tmplen = 1018;
-		cout << "dealing with " << fileNames[count - 1] << " " << tmplen << endl;
 		memcpy(output + indexptr, tmp, tmplen);//复制到最终的数组里
 		indexptr += tmplen;
 		delete[]tmp;

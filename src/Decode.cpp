@@ -371,7 +371,6 @@ int Decode::findQranchor(Mat& srcImg, Mat& dst)
 	cvtColor(srcImg, srcGray, COLOR_BGR2GRAY);
 //	threshold(srcGray, srcGray, 188, 255, THRESH_BINARY | THRESH_OTSU);
 	//threshold(srcGray, srcGray, 188, 255, THRESH_OTSU);
-	Mat otsu_gray;
 	//threshold(srcGray, otsu_gray, 188, 255, THRESH_BINARY);
 	threshold(srcGray, srcGray, 150, 255, THRESH_BINARY);
 
@@ -459,8 +458,15 @@ int Decode::findQranchor(Mat& srcImg, Mat& dst)
 		Mat warp_mat = getPerspectiveTransform(src_center, origin_center);
 
 		warpPerspective(srcGray, output, warp_mat, srcImg.size());
+
+
 		resize(output, output, Size(96, 96));
+
+
+		cvtColor(output, output,COLOR_GRAY2BGR);
+
 		dst = output;
+
 		return 1;
 	}
 	else
