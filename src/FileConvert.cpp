@@ -57,14 +57,12 @@ void FileConvert::GenerateRandFile(char filename[], unsigned long size)
 	delete[]tmp;
 }//生成随机文件
 
-void FileConvert::PicTransToVideo(int picNumPersec)//每秒帧数
+void FileConvert::PicTransToVideo(int picNumPersec, char myoutputname[])//每秒帧数
 {
 	string firstSetting, secondSetting, str3;
-	string outputname;
+	string outputname = myoutputname;
 	char picnum[5], command[200];
 	sprintf_s(picnum, "%d", picNumPersec);
-	cout << "please input the output video name:" << endl;
-	cin >> outputname;
 	firstSetting = "ffmpeg -f image2 -r ";
 	secondSetting = " -i imageSrc\\%05d.png -vcodec mpeg4 videoOutput\\";
 	str3 = firstSetting + picnum + secondSetting + outputname;
@@ -72,14 +70,14 @@ void FileConvert::PicTransToVideo(int picNumPersec)//每秒帧数
 	system(command);
 }// 命令格式 ffmpeg - f image2 - r fps - i imageSrc\%d.jpg - vcodec mpeg4 output\\%s.mp4 将图片保存至output目录下
 
-void FileConvert::VideoTransToPic()
+void FileConvert::VideoTransToPic(char outputname[])
 {
-	string firstSetting, formatName, videoName, str3;
+	string firstSetting, formatName, str3;
 	char command[200];
 	firstSetting = "ffmpeg -i videoSrc\\";
 	formatName = " imageOutput\\%05d.png";
-	cout << "Please enter video name:" << endl;
-	cin >> videoName;
+	//cout << "Please enter video name:" << endl;
+	string videoName(outputname);
 	str3 = firstSetting + videoName + formatName; //组合生成ffmpeg命令
 	sprintf_s(command, "%s", str3.c_str()); //转化类型
 	system(command);
