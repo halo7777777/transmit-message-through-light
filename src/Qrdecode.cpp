@@ -6,7 +6,7 @@ using namespace std;
 using namespace cv;
 
 
-void Qrdecode::mydecode()
+void Qrdecode::mydecode(char outputname[],char outfilename[],char vfname[])
 {
 	char fileName[128];
 	char tmpName[128];
@@ -14,7 +14,7 @@ void Qrdecode::mydecode()
 	Decode dec;
 	string path = "imageOutput\\";
 	FileConvert converter;
-	converter.VideoTransToPic();
+	converter.VideoTransToPic(outputname);
 
 	vector<Mat> dstTmp;
 
@@ -87,7 +87,7 @@ void Qrdecode::mydecode()
 	int total_length = (numOfPic - 1) * 1018 + length;
 	//Mat image;//源图片
 	int i, j;
-	char outfilename[] = "out.bin";
+	//char outfilename[] =outfile[];
 	count = 0;//图像文件计数
 
 
@@ -144,6 +144,6 @@ void Qrdecode::mydecode()
 	cout << giveUp << endl; 
 
 
-	char vfname[] = "v.bin";
+	//char vfname[] = "v.bin";
 	converter.ByteToFile(v, vfname, total_length);
 } 

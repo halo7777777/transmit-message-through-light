@@ -1,6 +1,5 @@
 #pragma once
 #include "Decode.h"
-#include"code.h"
 #include"FileConvert.h"
 Point Decode::Center_cal(vector<vector<Point> > contours, int i)
 {

@@ -15,8 +15,8 @@ public:
 	unsigned char* FileToByte(char filename[], unsigned long* size);
 	void ByteToFile(unsigned char* src, char filename[], unsigned long size);
 	void GenerateRandFile(char filename[], unsigned long size);
-	void PicTransToVideo(int picNumPersec);
-	void VideoTransToPic();
+	void PicTransToVideo(int picNumPersec, char myoutputname[]);
+	void VideoTransToPic(char outputname[]);
 	unsigned long GetFileSize(FILE* p);
 	int GetFilesNumber(string path);
 };
