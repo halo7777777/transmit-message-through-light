@@ -12,11 +12,11 @@
 
 > 运行Encode.exe
 >得到下面的程序运行界面
->![](https://pic.downk.cc/item/5e78d2c09dbe9d88c56c5597.png)
+>![error](https://pic.downk.cc/item/5e78d2c09dbe9d88c56c5597.png)
 
 > 输入 encode [二进制文件名] [生成的视频名] [视频长度(单位ms)]
-> **Example:**
-> encode 1.bin 1.mp4 1000
+></br> **Example:** 
+></br>  encode 1.bin 1.mp4 1000
 
 > 等待运行完毕即可得到生成的视频文件
 
@@ -29,11 +29,11 @@
 - **解码Decode：**
 > 运行Decode.exe
 >得到下面的程序运行界面
-![](https://pic.downk.cc/item/5e78d2cf9dbe9d88c56c6157.png)
+![error](https://pic.downk.cc/item/5e78d2cf9dbe9d88c56c6157.png)
 
 > 输入 encode [手机拍摄的视频名] [生成的二进制文件名] [二进制校验文件名]
-> **Example:**
-> decode 1.mp4 1.bin test.bin
+></br> **Example:**
+></br> decode 1.mp4 1.bin test.bin
 
 > 等待运行完毕即可得到生成的二进制文件
 
